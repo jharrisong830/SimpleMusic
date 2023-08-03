@@ -8,11 +8,23 @@
 import SwiftUI
 
 struct MainView: View {
+    @Environment(\.modelContext) private var modelContext
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        TabView {
+            ContentView()
+                .tabItem {
+                    Label("ContentView", systemImage: "network")
+                }
+            SettingsView()
+                .tabItem {
+                    Label("SettingsView", systemImage: "gear")
+                }
+        }
     }
 }
 
 #Preview {
     MainView()
+        .modelContainer(previewContainer)
 }

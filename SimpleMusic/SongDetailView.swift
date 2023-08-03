@@ -6,13 +6,45 @@
 //
 
 import SwiftUI
+import MusicKit
 
 struct SongDetailView: View {
+    @Bindable var song: SongData
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        List {
+            HStack {
+                Text("Title")
+                Spacer()
+                Text(song.name)
+            }
+            HStack {
+                Text("Artist")
+                Spacer()
+                Text(song.artists[0])
+            }
+            HStack {
+                Text("Album")
+                Spacer()
+                Text(song.albumName)
+            }
+            HStack {
+                Text("ISRC")
+                Spacer()
+                Text(song.isrc)
+            }
+            Button(action: {
+                Task {
+                    
+                    
+                }
+            }, label: {
+                Text("Apple Music API Search")
+            })
+        }
     }
 }
 
-#Preview {
-    SongDetailView()
-}
+//#Preview {
+//    SongDetailView(song: SampleSongData.contents[0])
+//}

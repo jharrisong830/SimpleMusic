@@ -6,3 +6,17 @@
 //
 
 import Foundation
+import SwiftData
+
+@Model
+class PlaylistData {
+    var name: String
+    var amid: String
+    var spid: String
+    
+    init(name: String, amid: String, spid: String) {
+        self.name = name
+        self.amid = amid
+        self.spid = spid
+    }
+}

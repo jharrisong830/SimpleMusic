@@ -10,11 +10,11 @@ import SwiftData
 
 @main
 struct SimpleMusicApp: App {
-
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MainView()
         }
-        .modelContainer(for: Item.self)
+        .modelContainer(for: SongData.self)
     }
 }
