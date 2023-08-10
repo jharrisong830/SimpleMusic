@@ -13,14 +13,12 @@ class PlaylistData {
     var name: String
     var amid: String
     var spid: String
-    var songs: [SongData]
     var coverImage: String?
     
-    init(name: String, amid: String, spid: String, songs: [SongData], coverImage: String?) {
+    init(name: String, amid: String, spid: String, coverImage: String?) {
         self.name = name
         self.amid = amid
         self.spid = spid
-        self.songs = songs
         self.coverImage = coverImage ?? ""
     }
 }

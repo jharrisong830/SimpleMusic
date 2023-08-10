@@ -20,17 +20,10 @@ struct ImportSpotifyPlaylistSheet: View {
     
     var body: some View {
         NavigationStack(path: $navPath) {
-            VStack {
-                List {
-                    ForEach(newplaylists) { playlist in
-                        NavigationLink(value: playlist) {
-                            PlaylistRow(playlist: playlist)
-                        }
-                    }
-                }
-                .navigationDestination(for: PlaylistData.self) { playlist in
-                    PlaylistDetailView(playlist: playlist, navPath: $navPath)
-                }
+            if SpotifyClient().checkRefresh() {
+                Spacer()
+                Text("You need to sign in again. Go to Settings > Connect Spotify Account.")
+                    .font(.title2)
                 Spacer()
                 Button(action: {
                     isPresented = false
@@ -40,12 +33,34 @@ struct ImportSpotifyPlaylistSheet: View {
                 .buttonStyle(ProminentButtonStyle())
                 Spacer()
             }
-            .navigationTitle("Import Playlist")
-            .task {
-                do {
-                    newplaylists = try await SpotifyClient().getPrivatePlaylists()
-                } catch {
-                    isPresented = false
+            else {
+                VStack {
+                    List {
+                        ForEach(newplaylists) { playlist in
+                            NavigationLink(value: playlist) {
+                                PlaylistRow(playlist: playlist)
+                            }
+                        }
+                    }
+                    .navigationDestination(for: PlaylistData.self) { playlist in
+                        ImportPlaylistView(playlist: playlist, navPath: $navPath)
+                    }
+                    Spacer()
+                    Button(action: {
+                        isPresented = false
+                    }, label: {
+                        Text("Done")
+                    })
+                    .buttonStyle(ProminentButtonStyle(color: .green))
+                    Spacer()
+                }
+                .navigationTitle("Import Playlist")
+                .task {
+                    do {
+                        newplaylists = try await SpotifyClient().getPrivatePlaylists()
+                    } catch {
+                        isPresented = false
+                    }
                 }
             }
         }

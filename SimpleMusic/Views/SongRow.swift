@@ -8,11 +8,29 @@
 import SwiftUI
 
 struct SongRow: View {
+    let song: SongData
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack {
+            AsyncImage(url: URL(string: song.coverImage!)) { image in
+                image.resizable()
+                    .frame(width: 37.5, height: 37.5)
+                    .clipShape(RoundedRectangle(cornerRadius: 2.5))
+            } placeholder: {
+                RoundedRectangle(cornerRadius: 2.5)
+                    .frame(width: 37.5, height: 37.5)
+                    .foregroundStyle(.gray)
+                    .overlay(content: {Image(systemName: "questionmark").foregroundStyle(.green)})
+            }
+            VStack(alignment: .leading) {
+                Text(song.name)
+                Text(song.artists.joined(separator: ", "))
+                    .font(.footnote)
+            }
+        }
     }
 }
 
-#Preview {
-    SongRow()
-}
+//#Preview {
+//    SongRow()
+//}

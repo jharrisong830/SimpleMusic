@@ -7,21 +7,25 @@
 
 import SwiftUI
 
-struct PlaylistDetailView: View {
-    @Environment(\.modelContext) private var modelContext
-    
+struct PlaylistDetailView: View {    
     @Bindable var playlist: PlaylistData
-    @Binding var navPath: [PlaylistData]
+    
+    @State private var songs: [SongData] = []
     
     var body: some View {
-        Text(playlist.name)
-        Button(action: {
-            modelContext.insert(playlist)
-            _ = navPath.popLast()
-        }, label: {
-            Text("Add to app")
-        })
-        .buttonStyle(ProminentButtonStyle())
+        List {
+            ForEach(songs) { song in
+                SongRow(song: song)
+            }
+        }
+        .navigationTitle(playlist.name)
+        .task {
+            do {
+                songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
+            } catch {
+                print("error loading songs")
+            }
+        }
     }
 }
 

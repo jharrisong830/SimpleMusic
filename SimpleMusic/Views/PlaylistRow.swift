@@ -14,11 +14,11 @@ struct PlaylistRow: View {
         HStack {
             AsyncImage(url: URL(string: playlist.coverImage!)) { image in
                 image.resizable()
-                    .frame(width: 75, height: 75)
+                    .frame(width: 64, height: 64)
                     .clipShape(RoundedRectangle(cornerRadius: 5))
             } placeholder: {
                 RoundedRectangle(cornerRadius: 5)
-                    .frame(width: 75, height: 75)
+                    .frame(width: 64, height: 64)
                     .foregroundStyle(.gray)
                     .overlay(content: {Image(systemName: "questionmark").foregroundStyle(.green)})
             }

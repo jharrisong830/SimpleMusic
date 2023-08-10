@@ -15,6 +15,6 @@ struct SimpleMusicApp: App {
         WindowGroup {
             MainView()
         }
-        .modelContainer(for: [SongData.self, PlaylistData.self])
+        .modelContainer(for: PlaylistData.self)
     }
 }

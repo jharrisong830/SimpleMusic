@@ -45,7 +45,7 @@ struct ContentView: View {
             else if musicKitStatus == .notDetermined {
                 List {
                     ForEach(playlists) { playlist in
-                        NavigationLink(playlist.name, destination: EmptyView())
+                        NavigationLink(playlist.name, destination: PlaylistDetailView(playlist: playlist))
                     }
                     .onDelete(perform: deleteItems)
                 }
@@ -88,5 +88,4 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(previewContainer)
 }
