@@ -16,6 +16,8 @@
 		A9BB169F2A732A84002BCCFD /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BB169E2A732A84002BCCFD /* WelcomeSheet.swift */; };
 		A9BB16A12A733133002BCCFD /* ProminentButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BB16A02A733133002BCCFD /* ProminentButtonStyle.swift */; };
 		A9BB16A32A7336C8002BCCFD /* WelcomeDetailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BB16A22A7336C8002BCCFD /* WelcomeDetailRow.swift */; };
+		A9BC661A2A802D8F00D0646C /* PlaylistRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BC66192A802D8F00D0646C /* PlaylistRow.swift */; };
+		A9C80A752A81D25B005C35A1 /* PlaylistDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9C80A742A81D25B005C35A1 /* PlaylistDetailView.swift */; };
 		A9E139992A7C3144007F2576 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = A9E139982A7C3144007F2576 /* KeychainAccess */; };
 		A9E1399B2A7C3429007F2576 /* PlaylistData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E1399A2A7C3429007F2576 /* PlaylistData.swift */; };
 		A9E1399D2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */; };
@@ -38,6 +40,8 @@
 		A9BB169E2A732A84002BCCFD /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
 		A9BB16A02A733133002BCCFD /* ProminentButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProminentButtonStyle.swift; sourceTree = "<group>"; };
 		A9BB16A22A7336C8002BCCFD /* WelcomeDetailRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeDetailRow.swift; sourceTree = "<group>"; };
+		A9BC66192A802D8F00D0646C /* PlaylistRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistRow.swift; sourceTree = "<group>"; };
+		A9C80A742A81D25B005C35A1 /* PlaylistDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDetailView.swift; sourceTree = "<group>"; };
 		A9E1399A2A7C3429007F2576 /* PlaylistData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistData.swift; sourceTree = "<group>"; };
 		A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSpotifyPlaylistSheet.swift; sourceTree = "<group>"; };
 		A9E43E6A2A72EF5F00E8B18F /* SongData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongData.swift; sourceTree = "<group>"; };
@@ -60,6 +64,42 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A9E32EC02A7EF59000BF02AD /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A9E43E6A2A72EF5F00E8B18F /* SongData.swift */,
+				A9E1399A2A7C3429007F2576 /* PlaylistData.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A9E32EC12A7EF59A00BF02AD /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A9FC2E402A72ED06009F2BE4 /* SimpleMusicApp.swift */,
+				A9FC2E422A72ED06009F2BE4 /* ContentView.swift */,
+				A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */,
+				A9C80A742A81D25B005C35A1 /* PlaylistDetailView.swift */,
+				A9BC66192A802D8F00D0646C /* PlaylistRow.swift */,
+				A9134E032A73EA0E00968834 /* MainView.swift */,
+				A9134E052A73EA8B00968834 /* SettingsView.swift */,
+				A9BB169B2A73040B002BCCFD /* SongDetailView.swift */,
+				A9BB169E2A732A84002BCCFD /* WelcomeSheet.swift */,
+				A9BB16A22A7336C8002BCCFD /* WelcomeDetailRow.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A9E32EC22A7EF5A800BF02AD /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				A9181A722A7C5C90007E3AF2 /* SpotifyClient.swift */,
+				A9BB16992A730046002BCCFD /* SampleRendering.swift */,
+				A9BB16A02A733133002BCCFD /* ProminentButtonStyle.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
 		A9FC2E342A72ED06009F2BE4 = {
 			isa = PBXGroup;
 			children = (
@@ -81,20 +121,10 @@
 			isa = PBXGroup;
 			children = (
 				A9BB169D2A730DB5002BCCFD /* Info.plist */,
-				A9FC2E402A72ED06009F2BE4 /* SimpleMusicApp.swift */,
-				A9FC2E422A72ED06009F2BE4 /* ContentView.swift */,
-				A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */,
 				A9181A742A7C5EB5007E3AF2 /* Config.xcconfig */,
-				A9134E032A73EA0E00968834 /* MainView.swift */,
-				A9181A722A7C5C90007E3AF2 /* SpotifyClient.swift */,
-				A9134E052A73EA8B00968834 /* SettingsView.swift */,
-				A9BB169B2A73040B002BCCFD /* SongDetailView.swift */,
-				A9BB169E2A732A84002BCCFD /* WelcomeSheet.swift */,
-				A9BB16A22A7336C8002BCCFD /* WelcomeDetailRow.swift */,
-				A9BB16992A730046002BCCFD /* SampleRendering.swift */,
-				A9BB16A02A733133002BCCFD /* ProminentButtonStyle.swift */,
-				A9E43E6A2A72EF5F00E8B18F /* SongData.swift */,
-				A9E1399A2A7C3429007F2576 /* PlaylistData.swift */,
+				A9E32EC22A7EF5A800BF02AD /* Utils */,
+				A9E32EC12A7EF59A00BF02AD /* Views */,
+				A9E32EC02A7EF59000BF02AD /* Models */,
 				A9FC2E462A72ED08009F2BE4 /* Assets.xcassets */,
 				A9FC2E482A72ED08009F2BE4 /* Preview Content */,
 			);
@@ -186,6 +216,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9BC661A2A802D8F00D0646C /* PlaylistRow.swift in Sources */,
 				A9BB16A32A7336C8002BCCFD /* WelcomeDetailRow.swift in Sources */,
 				A9134E042A73EA0E00968834 /* MainView.swift in Sources */,
 				A9BB169A2A730046002BCCFD /* SampleRendering.swift in Sources */,
@@ -197,6 +228,7 @@
 				A9BB169C2A73040B002BCCFD /* SongDetailView.swift in Sources */,
 				A9BB16A12A733133002BCCFD /* ProminentButtonStyle.swift in Sources */,
 				A9181A732A7C5C90007E3AF2 /* SpotifyClient.swift in Sources */,
+				A9C80A752A81D25B005C35A1 /* PlaylistDetailView.swift in Sources */,
 				A9BB169F2A732A84002BCCFD /* WelcomeSheet.swift in Sources */,
 				A9FC2E412A72ED06009F2BE4 /* SimpleMusicApp.swift in Sources */,
 			);

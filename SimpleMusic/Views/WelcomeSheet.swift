@@ -6,11 +6,10 @@
 //
 
 import SwiftUI
-import MusicKit
+import KeychainAccess
 
 struct WelcomeSheet: View {
     @Binding var firstLaunch: Bool
-    @Binding var musicKitStatus: MusicAuthorization.Status
     
     private struct DetailData: Identifiable {
         let title: String
@@ -26,6 +25,8 @@ struct WelcomeSheet: View {
         DetailData(title: "Matching Comes First", description: "SimpleMusic searches for exact song matches, and asks you to fill in any gaps.", iconName: "doc.on.doc.fill"),
         DetailData(title: "Your Data is Yours", description: "Rest assured that your song data will not be collected or sold.", iconName: "lock.square.stack.fill")
     ]
+    
+    private let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
     
     
     
@@ -44,7 +45,8 @@ struct WelcomeSheet: View {
             Button(action: {
                 let userDefaults = UserDefaults.standard
                 userDefaults.set(1, forKey: "simpleMusic_firstLaunch")
-                userDefaults.set("NONE", forKey: "simpleMusic_settings_spotifyAcc")
+                keychain["access_token"] = nil
+                keychain["refresh_token"] = nil
                 firstLaunch = false
             }, label: {
                 Text("Let's go!")
@@ -56,5 +58,5 @@ struct WelcomeSheet: View {
 }
 
 #Preview {
-    WelcomeSheet(firstLaunch: .constant(true), musicKitStatus: .constant(MusicAuthorization.Status.authorized))
+    WelcomeSheet(firstLaunch: .constant(true))
 }

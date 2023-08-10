@@ -11,7 +11,7 @@ import MusicKit
 
 struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
-    @Query private var songs: [SongData]
+    @Query private var playlists: [PlaylistData]
     
     @State private var firstLaunch = false
     @State private var musicKitStatus = MusicAuthorization.Status.notDetermined
@@ -44,8 +44,8 @@ struct ContentView: View {
             }
             else if musicKitStatus == .notDetermined {
                 List {
-                    ForEach(songs) { song in
-                        NavigationLink(song.name, destination: SongDetailView(song: song))
+                    ForEach(playlists) { playlist in
+                        NavigationLink(playlist.name, destination: EmptyView())
                     }
                     .onDelete(perform: deleteItems)
                 }
@@ -69,24 +69,18 @@ struct ContentView: View {
         }
         .onAppear(perform: isFirstLaunch)
         .sheet(isPresented: $firstLaunch, content: {
-            WelcomeSheet(firstLaunch: $firstLaunch, musicKitStatus: $musicKitStatus)
+            WelcomeSheet(firstLaunch: $firstLaunch)
         })
         .sheet(isPresented: $isPresented, content: {
             ImportSpotifyPlaylistSheet(isPresented: $isPresented)
         })
     }
 
-    private func addItem() {
-        withAnimation {
-            let newSong = SongData(name: "Death of a Bachelor", artists: ["Panic! At the Disco"], albumName: "Death of a Bachelor", albumArtists: ["Panic! At the Disco"], isrc: "", amid: "", spid: "")
-            modelContext.insert(newSong)
-        }
-    }
 
     private func deleteItems(offsets: IndexSet) {
         withAnimation {
             for index in offsets {
-                modelContext.delete(songs[index])
+                modelContext.delete(playlists[index])
             }
         }
     }
