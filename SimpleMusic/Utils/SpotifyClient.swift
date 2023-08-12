@@ -46,7 +46,7 @@ class SpotifyClient {
 //                print("URL response error")
 //                return
 //            }
-//            let jsonData = try JSONSerialization.jsonObject(with: data) as! Dictionary<String, Any>
+//            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
 //            
 //            // set codes in keychain
 //            keychain["access_token"] = jsonData["access_token"] as? String
@@ -75,10 +75,10 @@ class SpotifyClient {
                 return []
             }
             
-            let jsonData = try JSONSerialization.jsonObject(with: data) as! Dictionary<String, Any>
+            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             
-            allPlaylists.append(contentsOf: (jsonData["items"] as! [Dictionary<String, Any>]).map {
-                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, coverImage: ($0["images"] as! [Dictionary<String, Any>])[0]["url"] as? String)
+            allPlaylists.append(contentsOf: (jsonData["items"] as! [JSONObject]).map {
+                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String)
             })
             playlistURL = jsonData["next"] as? String
         } while playlistURL != nil
@@ -106,17 +106,17 @@ class SpotifyClient {
                 print("URL response error")
                 return []
             }
-            let jsonData = try JSONSerialization.jsonObject(with: data) as! Dictionary<String, Any>
+            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             
-            allSongs.append(contentsOf: (jsonData["items"] as! [Dictionary<String, Any>]).map {
-                SongData(name: ($0["track"] as! Dictionary<String, Any>)["name"] as! String,
-                         artists: (($0["track"] as! Dictionary<String, Any>)["artists"] as! [Dictionary<String, Any>]).map({$0["name"] as! String}),
-                         albumName: (($0["track"] as! Dictionary<String, Any>)["album"] as! Dictionary<String, Any>)["name"] as! String,
-                         albumArtists: ((($0["track"] as! Dictionary<String, Any>)["album"] as! Dictionary<String, Any>)["artists"] as! [Dictionary<String, Any>]).map({$0["name"] as! String}),
-                         isrc: (($0["track"] as! Dictionary<String, Any>)["external_ids"] as! Dictionary<String, Any>)["isrc"] as! String,
+            allSongs.append(contentsOf: (jsonData["items"] as! [JSONObject]).map {
+                SongData(name: ($0["track"] as! JSONObject)["name"] as! String,
+                         artists: (($0["track"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
+                         albumName: (($0["track"] as! JSONObject)["album"] as! JSONObject)["name"] as! String,
+                         albumArtists: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
+                         isrc: (($0["track"] as! JSONObject)["external_ids"] as! JSONObject)["isrc"] as! String,
                          amid: "",
-                         spid: ($0["track"] as! Dictionary<String, Any>)["id"] as! String,
-                         coverImage: ((($0["track"] as! Dictionary<String, Any>)["album"] as! Dictionary<String, Any>)["images"] as! [Dictionary<String, Any>])[2]["url"] as? String)
+                         spid: ($0["track"] as! JSONObject)["id"] as! String,
+                         coverImage: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String)
             })
             songURL = jsonData["next"] as? String
         } while songURL != nil

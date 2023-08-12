@@ -66,7 +66,7 @@ struct SettingsView: View {
                                 print("URL response error")
                                 return
                             }
-                            let jsonData = try JSONSerialization.jsonObject(with: data) as! Dictionary<String, Any>
+                            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
                             
                             // set codes in keychain
                             try keychain.removeAll()

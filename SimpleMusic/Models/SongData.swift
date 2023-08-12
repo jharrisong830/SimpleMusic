@@ -7,7 +7,7 @@
 
 import Foundation
 
-class SongData: Identifiable {
+class SongData: Identifiable, Hashable {
     var name: String
     var artists: [String]
     var albumName: String
@@ -28,5 +28,13 @@ class SongData: Identifiable {
         self.spid = spid
         self.id = self.spid
         self.coverImage = coverImage ?? ""
+    }
+    
+    static func == (lhs: SongData, rhs: SongData) -> Bool {
+        lhs.isrc == rhs.isrc
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.isrc)
     }
 }

@@ -8,6 +8,8 @@
 import SwiftUI
 import SwiftData
 
+typealias JSONObject = Dictionary<String, Any>
+
 @main
 struct SimpleMusicApp: App {
     

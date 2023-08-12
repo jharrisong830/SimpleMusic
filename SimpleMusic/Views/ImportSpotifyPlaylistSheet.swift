@@ -43,7 +43,7 @@ struct ImportSpotifyPlaylistSheet: View {
                         }
                     }
                     .navigationDestination(for: PlaylistData.self) { playlist in
-                        ImportPlaylistView(playlist: playlist, navPath: $navPath)
+                        ImportPlaylistView(playlist: playlist, navPath: $navPath, isPresented: $isPresented)
                     }
                     Spacer()
                     Button(action: {

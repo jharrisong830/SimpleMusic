@@ -12,6 +12,7 @@ struct ImportPlaylistView: View {
     
     @Bindable var playlist: PlaylistData
     @Binding var navPath: [PlaylistData]
+    @Binding var isPresented: Bool
     
     var body: some View {
         VStack {
@@ -19,6 +20,7 @@ struct ImportPlaylistView: View {
             Button {
                 modelContext.insert(playlist)
                 _ = navPath.popLast()
+                isPresented = false
             } label: {
                 Text("Add to App")
             }

@@ -14,8 +14,9 @@ struct ContentView: View {
     @Query private var playlists: [PlaylistData]
     
     @State private var firstLaunch = false
-    @State private var musicKitStatus = MusicAuthorization.Status.notDetermined
+    @State private var musicKitStatus = MusicAuthorization.currentStatus
     @State private var isPresented = false
+    @State private var navPath: [PlaylistData] = []
     
     func isFirstLaunch() {
         let userDefaults = UserDefaults.standard
@@ -25,8 +26,8 @@ struct ContentView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            if musicKitStatus == .denied { // TODO: should be .notDetermined
+        NavigationStack(path: $navPath) {
+            if musicKitStatus == .notDetermined { // TODO: should be .notDetermined
                 VStack {
                     Text("We need access to your music library first.")
                         .font(.title3).bold()
@@ -42,12 +43,23 @@ struct ContentView: View {
                 }
                 .navigationTitle("Home")
             }
-            else if musicKitStatus == .notDetermined {
+            else if musicKitStatus == .authorized {
                 List {
                     ForEach(playlists) { playlist in
-                        NavigationLink(playlist.name, destination: PlaylistDetailView(playlist: playlist))
+                        NavigationLink(value: playlist) {
+                            HStack {
+                                Text(playlist.name)
+                                Spacer()
+                                Image("Spotify Logo")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                            }
+                        }
                     }
                     .onDelete(perform: deleteItems)
+                }
+                .navigationDestination(for: PlaylistData.self) { playlist in
+                    PlaylistDetailWithOptionsView(playlist: playlist, navPath: $navPath)
                 }
                 .toolbar {
                     ToolbarItem(placement: .navigationBarTrailing) {
