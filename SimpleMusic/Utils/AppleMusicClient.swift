@@ -32,7 +32,7 @@ class AppleMusicClient {
                     print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
                     song.amid = songData["id"] as! String
                     let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.amid))
-                    var amSong = try await amSongReq.response()
+                    let amSong = try await amSongReq.response()
                     song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)!.absoluteString
                     matches += 1
                 }
@@ -64,5 +64,6 @@ class AppleMusicClient {
         musicURL.httpBody = try JSONSerialization.data(withJSONObject: reqSongData)
         let musicReq = MusicDataRequest(urlRequest: musicURL)
         let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
+        print(jsonData)
     }
 }
