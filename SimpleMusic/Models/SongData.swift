@@ -6,8 +6,10 @@
 //
 
 import Foundation
+import SwiftData
 
-class SongData: Identifiable, Hashable {
+@Model
+class SongData {
     var name: String
     var artists: [String]
     var albumName: String
@@ -15,7 +17,7 @@ class SongData: Identifiable, Hashable {
     var isrc: String
     var amid: String
     var spid: String
-    var id: String
+//    var id: String
     var coverImage: String?
     
     init(name: String, artists: [String], albumName: String, albumArtists: [String], isrc: String, amid: String, spid: String, coverImage: String?) {
@@ -26,15 +28,19 @@ class SongData: Identifiable, Hashable {
         self.isrc = isrc
         self.amid = amid
         self.spid = spid
-        self.id = self.spid
+//        self.id = self.spid
         self.coverImage = coverImage ?? ""
     }
     
-    static func == (lhs: SongData, rhs: SongData) -> Bool {
-        lhs.isrc == rhs.isrc
-    }
-    
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(self.isrc)
-    }
+//    static func == (lhs: SongData, rhs: SongData) -> Bool {
+//        lhs.isrc == rhs.isrc
+//    }
+//    
+//    func hash(into hasher: inout Hasher) {
+//        hasher.combine(self.isrc)
+//    }
+}
+
+extension SongData {
+    static let emptySong = SongData(name: "", artists: [], albumName: "", albumArtists: [], isrc: "", amid: "", spid: "", coverImage: "")
 }

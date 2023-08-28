@@ -33,6 +33,6 @@ struct WelcomeDetailRow: View {
     }
 }
 
-#Preview {
-    WelcomeDetailRow(iconName: "network", title: "Super Cool App", description: "This app is gonna do so much cool stuff just wait until you see!!!")
-}
+//#Preview {
+//    WelcomeDetailRow(iconName: "network", title: "Super Cool App", description: "This app is gonna do so much cool stuff just wait until you see!!!")
+//}

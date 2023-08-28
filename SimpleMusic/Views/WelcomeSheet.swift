@@ -57,6 +57,6 @@ struct WelcomeSheet: View {
     }
 }
 
-#Preview {
-    WelcomeSheet(firstLaunch: .constant(true))
-}
+//#Preview {
+//    WelcomeSheet(firstLaunch: .constant(true))
+//}

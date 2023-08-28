@@ -11,7 +11,7 @@ import KeychainAccess
 
 
 class AppleMusicClient {
-    func createAppleMusicPlaylist(playlist: PlaylistData) async throws -> [SongData] {
+    func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
         let songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
         let total = songs.count
         var matches = 0
@@ -31,13 +31,38 @@ class AppleMusicClient {
                     let songData = songDataArray[0]
                     print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
                     song.amid = songData["id"] as! String
+                    let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.amid))
+                    var amSong = try await amSongReq.response()
+                    song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)!.absoluteString
                     matches += 1
                 }
             }
         }
         print("Matched \(matches) / \(total) songs.")
         return songs
-        
-        
+    }
+    
+    func createNewPlaylist(name: String, description: String?) async throws -> String {
+        let playlistData = [
+            "attributes": [
+                "name": name,
+                "description": description
+            ]
+        ]
+        var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists")!)
+        musicURL.httpMethod = "POST"
+        musicURL.httpBody = try JSONSerialization.data(withJSONObject: playlistData)
+        let musicReq = MusicDataRequest(urlRequest: musicURL)
+        let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
+        return (jsonData["data"] as! [JSONObject])[0]["id"] as! String
+    }
+    
+    func addSongsToPlaylist(AMPlaylistID: String, songs: [SongData]) async throws {
+        let reqSongData = ["data": songs.map({["id": $0.amid, "type": "songs"]})]
+        var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(AMPlaylistID)/tracks")!)
+        musicURL.httpMethod = "POST"
+        musicURL.httpBody = try JSONSerialization.data(withJSONObject: reqSongData)
+        let musicReq = MusicDataRequest(urlRequest: musicURL)
+        let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
     }
 }

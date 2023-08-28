@@ -8,6 +8,15 @@
 import SwiftUI
 import AuthenticationServices
 import KeychainAccess
+import HTTPTypes
+import HTTPTypesFoundation
+
+
+extension HTTPField.Name {
+    static let contentType = Self("Content-Type")!
+    static let authorization = Self("Authorization")!
+}
+
 
 struct SettingsView: View {
     let userDefaults = UserDefaults.standard
@@ -52,20 +61,26 @@ struct SettingsView: View {
                             }
                             
                             // access and refresh codes
+                            var newRequest = HTTPRequest(method: .post, url: URL(string: "https://accounts.spotify.com/api/token")!)
+                            newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
                             let accessParams = "grant_type=authorization_code&code=\(spAuthCode!)&redirect_uri=\(redirect)"
-                            let accessURL = URL(string: "https://accounts.spotify.com/api/token")
-                            var accessReq = URLRequest(url: accessURL!)
-                            accessReq.httpMethod = "POST"
-                            accessReq.httpBody = accessParams.data(using: .utf8)
-                            accessReq.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+//                            let accessURL = URL(string: "https://accounts.spotify.com/api/token")
+//                            var accessReq = URLRequest(url: accessURL!)
+//                            accessReq.httpMethod = "POST"
+//                            accessReq.httpBody = accessParams.data(using: .utf8)
+//                            accessReq.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
                             let apiKeys = "\(spClient):\(api_key!)"
                             let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
-                            accessReq.setValue("Basic \(encodedKeys)", forHTTPHeaderField: "Authorization")
-                            let (data, response) = try await URLSession.shared.data(for: accessReq)
-                            guard response is HTTPURLResponse else {
-                                print("URL response error")
-                                return
-                            }
+                            newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
+//                            accessReq.setValue("Basic \(encodedKeys)", forHTTPHeaderField: "Authorization")
+                            let (data, _) = try await URLSession.shared.upload(for: newRequest, from: accessParams.data(using: .utf8)!)
+                            
+                            
+//                            let (data, response) = try await URLSession.shared.data(for: accessReq)
+//                            guard response is HTTPURLResponse else {
+//                                print("URL response error")
+//                                return
+//                            }
                             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
                             
                             // set codes in keychain
@@ -103,6 +118,6 @@ struct SettingsView: View {
     }
 }
 
-#Preview {
-    SettingsView()
-}
+//#Preview {
+//    SettingsView()
+//}

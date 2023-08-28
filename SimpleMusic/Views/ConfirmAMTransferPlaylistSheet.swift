@@ -12,12 +12,11 @@ struct ConfirmAMTransferPlaylistSheet: View {
     @Binding var spotifySongs: [SongData]
     @Binding var isPresented: Bool
     
-    @State private var navPath: [SongData] = []
     @State private var isMatchComplete = false
     @State private var matchedSongs: [SongData] = []
     
     var body: some View {
-        NavigationStack(path: $navPath) {
+        NavigationStack {
             if isMatchComplete {
                 List {
                     Section {
@@ -36,17 +35,31 @@ struct ConfirmAMTransferPlaylistSheet: View {
                     } header: {
                         Text("Details")
                     }
-                    Section {
-                        ForEach(matchedSongs) { song in
-                            NavigationLink(value: song) {
-                                HStack {
-                                    SongRow(song: song)
-                                    Spacer()
-                                    if song.amid.isEmpty {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .symbolRenderingMode(.multicolor)
+                    if matchedSongs.reduce(0, {$1.amid.isEmpty ? $0+1 : $0}) != 0 {
+                        Section {
+                            ForEach($matchedSongs) { $song in
+                                if song.amid.isEmpty {
+                                    NavigationLink(destination: SongMatchView(song: $song)) {
+                                        HStack {
+                                            SongRow(song: song)
+                                            Spacer()
+                                            Image(systemName: "xmark.circle.fill")
+                                                .symbolRenderingMode(.multicolor)
+                                        }
                                     }
-                                    else {
+                                }
+                            }
+                        } header: {
+                            Text("Needs Review")
+                        }
+                    }
+                    Section {
+                        ForEach($matchedSongs) { $song in
+                            if !song.amid.isEmpty {
+                                NavigationLink(destination: SongMatchView(song: $song)) {
+                                    HStack {
+                                        SongRow(song: song)
+                                        Spacer()
                                         Image(systemName: "checkmark.circle.fill")
                                             .symbolRenderingMode(.multicolor)
                                     }
@@ -56,9 +69,6 @@ struct ConfirmAMTransferPlaylistSheet: View {
                     } header: {
                         Text("Matches")
                     }
-                }
-                .navigationDestination(for: SongData.self) { song in
-                    SongDetailView(song: song)
                 }
                 .navigationTitle("Matched Results")
                 .toolbar {
@@ -71,17 +81,22 @@ struct ConfirmAMTransferPlaylistSheet: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button {
+                            Task {
+                                let newPlaylistID = try await AppleMusicClient().createNewPlaylist(name: playlist.name, description: "")
+                                try await AppleMusicClient().addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
+                            }
                             isPresented = false
                         } label: {
                             Text("Add")
-                                .foregroundStyle(.pink)
+                                .foregroundStyle(matchedSongs.reduce(0, {$1.amid.isEmpty ? $0+1 : $0}) != 0 ? .gray : .pink)
                         }
+                        .disabled(matchedSongs.reduce(0, {$1.amid.isEmpty ? $0+1 : $0}) != 0)
                     }
                 }
             }
             else {
                 VStack {
-                    Text("Matching Spotify songs with Apple Music catalog.")
+                    Text("Matching Spotify songs with Apple Music catalog. Keep this screen open.")
                         .padding()
                         .multilineTextAlignment(.center)
                         .foregroundStyle(.secondary)
@@ -101,7 +116,7 @@ struct ConfirmAMTransferPlaylistSheet: View {
         }
         .task {
             do {
-                matchedSongs = try await AppleMusicClient().createAppleMusicPlaylist(playlist: playlist)
+                matchedSongs = try await AppleMusicClient().getSongMatches(playlist: playlist)
                 isMatchComplete = true
             } catch {
                 print("error")

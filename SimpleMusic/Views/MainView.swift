@@ -10,6 +10,8 @@ import SwiftUI
 struct MainView: View {
     @Environment(\.modelContext) private var modelContext
     
+    @State private var dq = DispatchQueue(label: "John-Graham.SimpleMusic")
+    
     var body: some View {
         TabView {
             ContentView()
@@ -24,6 +26,6 @@ struct MainView: View {
     }
 }
 
-#Preview {
-    MainView()
-}
+//#Preview {
+//    MainView()
+//}
