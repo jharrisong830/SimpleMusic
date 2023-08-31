@@ -38,7 +38,7 @@ class SpotifyClient {
         let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
         newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
         
-        let (data, response) = try await URLSession.shared.upload(for: newRequest, from: accessParams.data(using: .utf8)!)
+        let (data, _) = try await URLSession.shared.upload(for: newRequest, from: accessParams.data(using: .utf8)!)
         
         let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
         
