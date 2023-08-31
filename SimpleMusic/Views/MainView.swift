@@ -6,11 +6,12 @@
 //
 
 import SwiftUI
+import KeychainAccess
+import HTTPTypes
+import HTTPTypesFoundation
 
 struct MainView: View {
     @Environment(\.modelContext) private var modelContext
-    
-    @State private var dq = DispatchQueue(label: "John-Graham.SimpleMusic")
     
     var body: some View {
         TabView {

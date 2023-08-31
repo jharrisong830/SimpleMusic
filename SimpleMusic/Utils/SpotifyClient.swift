@@ -12,7 +12,7 @@ import HTTPTypesFoundation
 
 
 class SpotifyClient {
-    private let spClient = "af3b24f07e0e464889fdcd33bbf8b7d6"
+    private let spClient = "6dd07b58beda42a796654e331dcd99bd"
     private let redirect = "simple-music://"
     
     
@@ -20,47 +20,31 @@ class SpotifyClient {
     
     func checkRefresh() -> Bool {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
-        let expiryTime = Double(keychain["access_expiration"]!)!
-//        let api_key = Bundle.main.infoDictionary?["API_KEY"] as? String
-        
-        if Date.now.timeIntervalSince1970 > expiryTime { // returns true if key needs to be refreshed, false if okay
-            do {
-                try keychain.removeAll()
-            } catch {
-                print("error resetting keychain")
-            }
+        guard let expiryTime = Double(keychain["access_expiration"]!) else {
             return true
         }
-        return false
-
-//        if /*Date.now.timeIntervalSince1970*/ Double.infinity > expiryTime {
-//            // use refresh token to get new access token
-//            let accessParams = "grant_type=refresh_token&refresh_token=\(keychain["refresh_token"]!)&redirect_uri=\(redirect)"
-//            var newRequest = HTTPRequest(method: .post, url: URL(string: "https://accounts.spotify.com/api/token")!)
-//            newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
-////            let accessURL = URL(string: "https://accounts.spotify.com/api/token")
-////            var accessReq = URLRequest(url: accessURL!)
-////            accessReq.httpMethod = "POST"
-////            accessReq.httpBody = accessParams.data(using: .utf8)
-////            accessReq.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-//            let apiKeys = "\(spClient):\(api_key!)"
-//            let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
-////            accessReq.setValue("Basic \(encodedKeys)", forHTTPHeaderField: "Authorization")
-//            
-//            let (data, response) = try await URLSession.shared.upload(for: newRequest, from: accessParams.data(using: .utf8)!)
-//            
-//            newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
-////            let (data, response) = try await URLSession.shared.data(for: accessReq)
-////            guard response is HTTPURLResponse else {
-////                print("URL response error")
-////                return
-////            }
-//            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
-//            
-//            // set codes in keychain
-//            keychain["access_token"] = jsonData["access_token"] as? String
-//            keychain["access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
-//        }
+        return Date.now.timeIntervalSince1970 > expiryTime // returns true if key needs to be refreshed, false if okay
+    }
+    
+    func getRefreshToken() async throws {
+        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+        let api_key = Bundle.main.infoDictionary?["API_KEY"] as? String
+        
+        let accessParams = "grant_type=refresh_token&refresh_token=\(keychain["refresh_token"]!)&redirect_uri=\(redirect)"
+        var newRequest = HTTPRequest(method: .post, url: URL(string: "https://accounts.spotify.com/api/token")!)
+        newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
+        
+        let apiKeys = "\(spClient):\(api_key!)"
+        let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
+        newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
+        
+        let (data, response) = try await URLSession.shared.upload(for: newRequest, from: accessParams.data(using: .utf8)!)
+        
+        let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+        
+        // set codes in keychain
+        keychain["access_token"] = jsonData["access_token"] as? String
+        keychain["access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
     }
     
     

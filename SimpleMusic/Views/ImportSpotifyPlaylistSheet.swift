@@ -15,12 +15,12 @@ struct ImportSpotifyPlaylistSheet: View {
     @Binding var isPresented: Bool
     
     @State private var newplaylists: [PlaylistData] = []
-    
+    @State private var refreshNeeded = SpotifyClient().checkRefresh()
     @State private var navPath: [PlaylistData] = []
     
     var body: some View {
         NavigationStack(path: $navPath) {
-            if SpotifyClient().checkRefresh() {
+            if refreshNeeded {
                 Spacer()
                 Text("You need to sign in again. Go to Settings > Connect Spotify Account.")
                     .font(.title2)
@@ -31,6 +31,15 @@ struct ImportSpotifyPlaylistSheet: View {
                     Text("Done")
                 })
                 .buttonStyle(ProminentButtonStyle())
+                Button {
+                    Task {
+                        try await SpotifyClient().getRefreshToken()
+                        refreshNeeded = false
+                    }
+                } label: {
+                    Text("Try Refresh")
+                }
+                .buttonStyle(ProminentButtonStyle(color: .green))
                 Spacer()
             }
             else {

@@ -115,6 +115,19 @@ struct SettingsView: View {
             }
         }
         .navigationTitle("Settings")
+        .task {
+            if SpotifyClient().checkRefresh() {
+                do {
+                    try await SpotifyClient().getRefreshToken()
+                } catch {
+                    do {
+                        try keychain.removeAll()
+                    } catch {
+                        print("Couldn't sign out")
+                    }
+                }
+            }
+        }
     }
 }
 
