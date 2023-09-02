@@ -42,7 +42,7 @@ class AppleMusicClient {
         return songs
     }
     
-    func createNewPlaylist(name: String, description: String?) async throws -> String {
+    func createNewPlaylist(name: String, description: String?) async throws -> MusicItemID {
         let playlistData = [
             "attributes": [
                 "name": name,
@@ -54,10 +54,10 @@ class AppleMusicClient {
         musicURL.httpBody = try JSONSerialization.data(withJSONObject: playlistData)
         let musicReq = MusicDataRequest(urlRequest: musicURL)
         let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
-        return (jsonData["data"] as! [JSONObject])[0]["id"] as! String
+        return (jsonData["data"] as! [JSONObject])[0]["id"] as! MusicItemID
     }
     
-    func addSongsToPlaylist(AMPlaylistID: String, songs: [SongData]) async throws {
+    func addSongsToPlaylist(AMPlaylistID: MusicItemID, songs: [SongData]) async throws {
         let reqSongData = ["data": songs.map({["id": $0.amid, "type": "songs"]})]
         var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(AMPlaylistID)/tracks")!)
         musicURL.httpMethod = "POST"
@@ -65,5 +65,19 @@ class AppleMusicClient {
         let musicReq = MusicDataRequest(urlRequest: musicURL)
         let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
         print(jsonData)
+    }
+    
+    func getPlaylists() async throws -> [PlaylistData] {
+        var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists")!)
+        musicURL.httpMethod = "GET"
+        let musicReq = MusicDataRequest(urlRequest: musicURL)
+        let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
+        print(jsonData)
+        
+        var allPlaylists: [PlaylistData] = []
+        allPlaylists.append(contentsOf: (jsonData["data"] as! [JSONObject]).map {
+            PlaylistData(name: ($0["attributes"] as! JSONObject)["name"] as! String, amid: $0["id"] as! String, spid: "", coverImage: "")
+        })
+        return allPlaylists
     }
 }

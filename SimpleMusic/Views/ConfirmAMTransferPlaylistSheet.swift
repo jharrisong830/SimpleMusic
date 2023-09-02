@@ -83,6 +83,7 @@ struct ConfirmAMTransferPlaylistSheet: View {
                         Button {
                             Task {
                                 let newPlaylistID = try await AppleMusicClient().createNewPlaylist(name: playlist.name, description: "")
+                                print(newPlaylistID)
                                 try await AppleMusicClient().addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
                             }
                             isPresented = false

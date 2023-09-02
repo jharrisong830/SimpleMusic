@@ -11,11 +11,39 @@ import HTTPTypes
 import HTTPTypesFoundation
 
 
+extension HTTPField.Name {
+    static let contentType = Self("Content-Type")!
+    static let authorization = Self("Authorization")!
+}
+
+
 class SpotifyClient {
     private let spClient = "6dd07b58beda42a796654e331dcd99bd"
     private let redirect = "simple-music://"
     
     
+    
+    func initialAccessAuth(authCode: String) async throws {
+        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+        let api_key = Bundle.main.infoDictionary?["API_KEY"] as? String
+        
+        var newRequest = HTTPRequest(method: .post, url: URL(string: "https://accounts.spotify.com/api/token")!)
+        newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
+        let accessParams = "grant_type=authorization_code&code=\(authCode)&redirect_uri=\(redirect)"
+
+        let apiKeys = "\(spClient):\(api_key!)"
+        let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
+        newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
+        
+        let (data, _) = try await URLSession.shared.upload(for: newRequest, from: accessParams.data(using: .utf8)!)
+        let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+        
+        // set codes in keychain
+        try keychain.removeAll()
+        keychain["access_token"] = jsonData["access_token"] as? String
+        keychain["refresh_token"] = jsonData["refresh_token"] as? String
+        keychain["access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
+    }
     
     
     func checkRefresh() -> Bool {

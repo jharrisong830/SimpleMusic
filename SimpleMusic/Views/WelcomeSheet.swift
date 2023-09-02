@@ -9,6 +9,8 @@ import SwiftUI
 import KeychainAccess
 
 struct WelcomeSheet: View {
+    @Environment(\.modelContext) private var modelContext
+    
     @Binding var firstLaunch: Bool
     
     private struct DetailData: Identifiable {
@@ -43,8 +45,9 @@ struct WelcomeSheet: View {
             }
             Spacer()
             Button(action: {
-                let userDefaults = UserDefaults.standard
-                userDefaults.set(1, forKey: "simpleMusic_firstLaunch")
+                modelContext.insert(UserSettings())
+//                let userDefaults = UserDefaults.standard
+//                userDefaults.set(1, forKey: "simpleMusic_firstLaunch")
                 keychain["access_token"] = nil
                 keychain["refresh_token"] = nil
                 firstLaunch = false

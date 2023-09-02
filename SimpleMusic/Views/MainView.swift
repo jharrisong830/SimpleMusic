@@ -10,19 +10,28 @@ import KeychainAccess
 import HTTPTypes
 import HTTPTypesFoundation
 
+
+enum SelectedTab {
+    case home
+    case settings
+}
+
+
 struct MainView: View {
-    @Environment(\.modelContext) private var modelContext
+    @State private var currentTab: SelectedTab = .home
     
     var body: some View {
-        TabView {
-            ContentView()
+        TabView(selection: $currentTab) {
+            ContentView(currentTab: $currentTab)
                 .tabItem {
                     Label("ContentView", systemImage: "network")
                 }
+                .tag(SelectedTab.home)
             SettingsView()
                 .tabItem {
                     Label("SettingsView", systemImage: "gear")
                 }
+                .tag(SelectedTab.settings)
         }
     }
 }

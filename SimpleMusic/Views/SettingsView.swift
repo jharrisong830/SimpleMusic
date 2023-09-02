@@ -6,26 +6,21 @@
 //
 
 import SwiftUI
+import SwiftData
 import AuthenticationServices
 import KeychainAccess
 import HTTPTypes
 import HTTPTypesFoundation
-
-
-extension HTTPField.Name {
-    static let contentType = Self("Content-Type")!
-    static let authorization = Self("Authorization")!
-}
+import MusicKit
 
 
 struct SettingsView: View {
-    let userDefaults = UserDefaults.standard
+    @Query private var userSettings: [UserSettings]
     
     private let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
     private let spClient = "6dd07b58beda42a796654e331dcd99bd"
     private let redirect = "simple-music://"
     
-    @State private var authenticatedJustNow = false
     @State private var authRequestFailed = false
     
     @Environment(\.webAuthenticationSession) private var webAuthenticationSession
@@ -33,11 +28,9 @@ struct SettingsView: View {
     
     var body: some View {
         List {
-            Section(header: Text("Accounts"), footer: Text("Connect to your Spotify account to transfer playlists between your music services.")) {
-                if keychain["access_token"] == nil && !authenticatedJustNow {
-                    Button(action: {
-                        let api_key = Bundle.main.infoDictionary?["API_KEY"] as? String
-                        
+            Section(header: Text("Spotify"), footer: Text("Connect to your Spotify account to transfer playlists between your music services.")) {
+                if !userSettings[0].spotifyActive {
+                    Button(action: {                        
                         let params = [
                             "response_type": "code",
                             "client_id": spClient,
@@ -61,35 +54,14 @@ struct SettingsView: View {
                             }
                             
                             // access and refresh codes
-                            var newRequest = HTTPRequest(method: .post, url: URL(string: "https://accounts.spotify.com/api/token")!)
-                            newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
-                            let accessParams = "grant_type=authorization_code&code=\(spAuthCode!)&redirect_uri=\(redirect)"
-//                            let accessURL = URL(string: "https://accounts.spotify.com/api/token")
-//                            var accessReq = URLRequest(url: accessURL!)
-//                            accessReq.httpMethod = "POST"
-//                            accessReq.httpBody = accessParams.data(using: .utf8)
-//                            accessReq.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-                            let apiKeys = "\(spClient):\(api_key!)"
-                            let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
-                            newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
-//                            accessReq.setValue("Basic \(encodedKeys)", forHTTPHeaderField: "Authorization")
-                            let (data, _) = try await URLSession.shared.upload(for: newRequest, from: accessParams.data(using: .utf8)!)
-                            
-                            
-//                            let (data, response) = try await URLSession.shared.data(for: accessReq)
-//                            guard response is HTTPURLResponse else {
-//                                print("URL response error")
-//                                return
-//                            }
-                            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
-                            
-                            // set codes in keychain
-                            try keychain.removeAll()
-                            keychain["user_authorization"] = spAuthCode
-                            keychain["access_token"] = jsonData["access_token"] as? String
-                            keychain["refresh_token"] = jsonData["refresh_token"] as? String
-                            keychain["access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
-                            authenticatedJustNow = true
+                            do {
+                                try await SpotifyClient().initialAccessAuth(authCode: spAuthCode!)
+                            } catch {
+                                authRequestFailed = true
+                                print("Failed to get ACCESS CODE")
+                                return
+                            }
+                            userSettings[0].spotifyActive = true
                         }
                     }, label: {
                         Text("Connect Spotify Account")
@@ -100,10 +72,17 @@ struct SettingsView: View {
                 else {
                     Text("Account authorized!")
                         .listRowBackground(Color.green)
+                    Button {
+                        Task {
+                            try await SpotifyClient().getRefreshToken()
+                        }
+                    } label: {
+                        Text("Try Refresh")
+                    }
                     Button(action: {
                         do {
                             try keychain.removeAll()
-                            authenticatedJustNow = false
+                            userSettings[0].spotifyActive = false
                         } catch {
                             print("Couldn't sign out")
                         }
@@ -111,6 +90,26 @@ struct SettingsView: View {
                         Text("Sign out")
                             .foregroundStyle(.red)
                     })
+                }
+            }
+            Section(header: Text("Apple Music"), footer: Text("Connect your Apple Music account to transfer your music between services.")) {
+                if MusicAuthorization.currentStatus == .notDetermined {
+                    Button {
+                        Task {
+                            let status = await MusicAuthorization.request()
+                            print(status.description)
+                        }
+                    } label: {
+                        Text("Connect Apple Music Account")
+                            .foregroundStyle(.pink)
+                    }
+                }
+                else if MusicAuthorization.currentStatus == .authorized {
+                    Text("Account authorized!")
+                        .listRowBackground(Color.pink)
+                }
+                else {
+                    Text("Couldn't access your Apple Music account. Please enable access in your device settings.")
                 }
             }
         }

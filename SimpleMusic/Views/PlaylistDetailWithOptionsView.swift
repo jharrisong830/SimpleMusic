@@ -58,6 +58,9 @@ struct PlaylistDetailWithOptionsView: View {
         .navigationTitle(playlist.name)
         .task {
             do {
+                if SpotifyClient().checkRefresh() {
+                    try await SpotifyClient().getRefreshToken()
+                }
                 songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
             } catch {
                 print("error loading songs")

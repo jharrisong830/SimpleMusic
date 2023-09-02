@@ -29,6 +29,9 @@
 		A9EECB002A86DDF200C516CB /* AppleMusicClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EECAFF2A86DDF200C516CB /* AppleMusicClient.swift */; };
 		A9EECB022A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EECB012A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift */; };
 		A9EECB042A86EED000C516CB /* SongMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EECB032A86EED000C516CB /* SongMatchView.swift */; };
+		A9F3EAF52AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F3EAF42AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift */; };
+		A9FB14E52AA3B9F90098306C /* SourceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FB14E42AA3B9F90098306C /* SourceMenuView.swift */; };
+		A9FB14E72AA3BCAB0098306C /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FB14E62AA3BCAB0098306C /* UserSettings.swift */; };
 		A9FC2E412A72ED06009F2BE4 /* SimpleMusicApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FC2E402A72ED06009F2BE4 /* SimpleMusicApp.swift */; };
 		A9FC2E432A72ED06009F2BE4 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FC2E422A72ED06009F2BE4 /* ContentView.swift */; };
 		A9FC2E472A72ED08009F2BE4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A9FC2E462A72ED08009F2BE4 /* Assets.xcassets */; };
@@ -57,6 +60,9 @@
 		A9EECAFF2A86DDF200C516CB /* AppleMusicClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicClient.swift; sourceTree = "<group>"; };
 		A9EECB012A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmAMTransferPlaylistSheet.swift; sourceTree = "<group>"; };
 		A9EECB032A86EED000C516CB /* SongMatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongMatchView.swift; sourceTree = "<group>"; };
+		A9F3EAF42AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportApplePlaylistSheet.swift; sourceTree = "<group>"; };
+		A9FB14E42AA3B9F90098306C /* SourceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceMenuView.swift; sourceTree = "<group>"; };
+		A9FB14E62AA3BCAB0098306C /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
 		A9FC2E3D2A72ED06009F2BE4 /* SimpleMusic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SimpleMusic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A9FC2E402A72ED06009F2BE4 /* SimpleMusicApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleMusicApp.swift; sourceTree = "<group>"; };
 		A9FC2E422A72ED06009F2BE4 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -83,6 +89,7 @@
 			children = (
 				A9E43E6A2A72EF5F00E8B18F /* SongData.swift */,
 				A9E1399A2A7C3429007F2576 /* PlaylistData.swift */,
+				A9FB14E62AA3BCAB0098306C /* UserSettings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -93,6 +100,8 @@
 				A9FC2E402A72ED06009F2BE4 /* SimpleMusicApp.swift */,
 				A9FC2E422A72ED06009F2BE4 /* ContentView.swift */,
 				A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */,
+				A9F3EAF42AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift */,
+				A9FB14E42AA3B9F90098306C /* SourceMenuView.swift */,
 				A902205D2A8537170016E00D /* ImportPlaylistView.swift */,
 				A9C80A742A81D25B005C35A1 /* PlaylistDetailView.swift */,
 				A998F8C02A85563600D33EDA /* PlaylistDetailWithOptionsView.swift */,
@@ -250,13 +259,16 @@
 				A9D26CF52A84753900D2C609 /* SongRow.swift in Sources */,
 				A9E1399D2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift in Sources */,
 				A9134E062A73EA8B00968834 /* SettingsView.swift in Sources */,
+				A9F3EAF52AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift in Sources */,
 				A9BB16A12A733133002BCCFD /* ProminentButtonStyle.swift in Sources */,
 				A9181A732A7C5C90007E3AF2 /* SpotifyClient.swift in Sources */,
+				A9FB14E72AA3BCAB0098306C /* UserSettings.swift in Sources */,
 				A94FA6922A8EA24600ADCB22 /* SongMatchPicker.swift in Sources */,
 				A9C80A752A81D25B005C35A1 /* PlaylistDetailView.swift in Sources */,
 				A9EECB002A86DDF200C516CB /* AppleMusicClient.swift in Sources */,
 				A9EECB022A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift in Sources */,
 				A9BB169F2A732A84002BCCFD /* WelcomeSheet.swift in Sources */,
+				A9FB14E52AA3B9F90098306C /* SourceMenuView.swift in Sources */,
 				A9FC2E412A72ED06009F2BE4 /* SimpleMusicApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -400,6 +412,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = SimpleMusic/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SimpleMusic;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -433,6 +446,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = "";
 				INFOPLIST_FILE = SimpleMusic/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = SimpleMusic;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
