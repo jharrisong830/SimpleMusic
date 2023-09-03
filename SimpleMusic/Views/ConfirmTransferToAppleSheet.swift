@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ConfirmAMTransferPlaylistSheet: View {
+struct ConfirmTransferToAppleSheet: View {
     @Bindable var playlist: PlaylistData
     @Binding var spotifySongs: [SongData]
     @Binding var isPresented: Bool

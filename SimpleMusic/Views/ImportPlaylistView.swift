@@ -15,17 +15,19 @@ struct ImportPlaylistView: View {
     @Binding var isPresented: Bool
     
     var body: some View {
-        VStack {
-            PlaylistDetailView(playlist: playlist)
-            Button {
-                modelContext.insert(playlist)
-                _ = navPath.popLast()
-                isPresented = false
-            } label: {
-                Text("Add to App")
+        PlaylistDetailView(playlist: playlist)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button {
+                        modelContext.insert(playlist)
+                        _ = navPath.popLast()
+                        isPresented = false
+                    } label: {
+                        Text("Add to App")
+                            .foregroundStyle(playlist.sourcePlatform == .spotify ? .green : .pink)
+                    }
+                }
             }
-            .buttonStyle(ProminentButtonStyle(color: .green))
-        }
     }
 }
 

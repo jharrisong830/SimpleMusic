@@ -22,10 +22,6 @@ struct ContentView: View {
     @State private var navPath: [PlaylistData] = []
     
     func isFirstLaunch() {
-//        let userDefaults = UserDefaults.standard
-//        if userDefaults.object(forKey: "simpleMusic_firstLaunch") == nil {
-//            firstLaunch = true
-//        }
         firstLaunch = userSettings == []
     }
 
@@ -37,9 +33,16 @@ struct ContentView: View {
                         HStack {
                             Text(playlist.name)
                             Spacer()
-                            Image("Spotify Logo")
-                                .resizable()
-                                .frame(width: 20, height: 20)
+                            switch playlist.sourcePlatform {
+                            case .appleMusic:
+                                Image("AM Logo")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                            case .spotify:
+                                Image("Spotify Logo")
+                                    .resizable()
+                                    .frame(width: 20, height: 20)
+                            }
                         }
                     }
                 }

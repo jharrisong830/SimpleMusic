@@ -8,6 +8,12 @@
 import Foundation
 import SwiftData
 
+enum MatchState: Codable {
+    case notDetermined
+    case failed
+    case successful
+}
+
 @Model
 class SongData {
     var name: String
@@ -17,10 +23,10 @@ class SongData {
     var isrc: String
     var amid: String
     var spid: String
-//    var id: String
     var coverImage: String?
+    var matchState: MatchState
     
-    init(name: String, artists: [String], albumName: String, albumArtists: [String], isrc: String, amid: String, spid: String, coverImage: String?) {
+    init(name: String, artists: [String], albumName: String, albumArtists: [String], isrc: String, amid: String, spid: String, coverImage: String?, matchState: MatchState = .notDetermined) {
         self.name = name
         self.artists = artists
         self.albumName = albumName
@@ -28,17 +34,9 @@ class SongData {
         self.isrc = isrc
         self.amid = amid
         self.spid = spid
-//        self.id = self.spid
         self.coverImage = coverImage ?? ""
+        self.matchState = matchState
     }
-    
-//    static func == (lhs: SongData, rhs: SongData) -> Bool {
-//        lhs.isrc == rhs.isrc
-//    }
-//    
-//    func hash(into hasher: inout Hasher) {
-//        hasher.combine(self.isrc)
-//    }
 }
 
 extension SongData {

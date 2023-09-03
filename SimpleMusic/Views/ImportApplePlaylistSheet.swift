@@ -19,27 +19,16 @@ struct ImportApplePlaylistSheet: View {
     
     var body: some View {
         NavigationStack(path: $navPath) {
-            VStack {
-                List {
-                    ForEach(newplaylists) { playlist in
-                        NavigationLink(value: playlist) {
-                            PlaylistRow(playlist: playlist)
-                        }
+            ImportPlaylistGeneralView(isPresented: $isPresented, newplaylists: $newplaylists, navPath: $navPath)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button {
+                        isPresented = false
+                    } label: {
+                        Text("Cancel")
                     }
                 }
-                .navigationDestination(for: PlaylistData.self) { playlist in
-                    ImportPlaylistView(playlist: playlist, navPath: $navPath, isPresented: $isPresented)
-                }
-                Spacer()
-                Button(action: {
-                    isPresented = false
-                }, label: {
-                    Text("Done")
-                })
-                .buttonStyle(ProminentButtonStyle())
-                Spacer()
             }
-            .navigationTitle("Import Playlist")
             .task {
                 do {
                     newplaylists = try await AppleMusicClient().getPlaylists()

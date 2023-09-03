@@ -72,12 +72,38 @@ class AppleMusicClient {
         musicURL.httpMethod = "GET"
         let musicReq = MusicDataRequest(urlRequest: musicURL)
         let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
-        print(jsonData)
         
         var allPlaylists: [PlaylistData] = []
         allPlaylists.append(contentsOf: (jsonData["data"] as! [JSONObject]).map {
-            PlaylistData(name: ($0["attributes"] as! JSONObject)["name"] as! String, amid: $0["id"] as! String, spid: "", coverImage: "")
+            PlaylistData(name: ($0["attributes"] as! JSONObject)["name"] as! String, amid: $0["id"] as! String, spid: "", coverImage: "", sourcePlatform: .appleMusic)
         })
         return allPlaylists
+    }
+    
+    func getPlaylistSongs(playlistID: String) async throws -> [SongData] {
+        var allSongs: [SongData] = []
+        
+        var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(playlistID)/tracks")!)
+        musicURL.httpMethod = "GET"
+        let musicReq = MusicDataRequest(urlRequest: musicURL)
+        let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
+        
+        let allIDs = (jsonData["data"] as! [JSONObject]).map {
+            (($0["attributes"] as! JSONObject)["playParams"] as! JSONObject)["catalogId"] as! String
+        }
+        for id in allIDs {
+            var resourceReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(id))
+            let resourceResponse = try await resourceReq.response().items[0]
+            allSongs.append(SongData(name: resourceResponse.title,
+                                     artists: [resourceResponse.artistName],
+                                     albumName: resourceResponse.albumTitle!,
+                                     albumArtists: [resourceResponse.artistName],
+                                     isrc: resourceResponse.isrc!,
+                                     amid: resourceResponse.id.rawValue,
+                                     spid: "",
+                                     coverImage: resourceResponse.artwork!.url(width: 300, height: 300)!.absoluteString
+            ))
+        }
+        return allSongs
     }
 }

@@ -99,7 +99,7 @@ class SpotifyClient {
             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             
             allPlaylists.append(contentsOf: (jsonData["items"] as! [JSONObject]).map {
-                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String)
+                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String, sourcePlatform: .spotify)
             })
             playlistURL = jsonData["next"] as? String
         } while playlistURL != nil

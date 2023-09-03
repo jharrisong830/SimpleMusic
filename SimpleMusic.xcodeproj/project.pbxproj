@@ -27,8 +27,10 @@
 		A9E1399D2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */; };
 		A9E43E6B2A72EF5F00E8B18F /* SongData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9E43E6A2A72EF5F00E8B18F /* SongData.swift */; };
 		A9EECB002A86DDF200C516CB /* AppleMusicClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EECAFF2A86DDF200C516CB /* AppleMusicClient.swift */; };
-		A9EECB022A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EECB012A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift */; };
+		A9EECB022A86EA2800C516CB /* ConfirmTransferToAppleSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EECB012A86EA2800C516CB /* ConfirmTransferToAppleSheet.swift */; };
 		A9EECB042A86EED000C516CB /* SongMatchView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9EECB032A86EED000C516CB /* SongMatchView.swift */; };
+		A9F3E0062AA41CC900AE81B2 /* ImportPlaylistGeneralView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F3E0052AA41CC900AE81B2 /* ImportPlaylistGeneralView.swift */; };
+		A9F3E0082AA4352A00AE81B2 /* ConfirmTransferToSpotifySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F3E0072AA4352A00AE81B2 /* ConfirmTransferToSpotifySheet.swift */; };
 		A9F3EAF52AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9F3EAF42AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift */; };
 		A9FB14E52AA3B9F90098306C /* SourceMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FB14E42AA3B9F90098306C /* SourceMenuView.swift */; };
 		A9FB14E72AA3BCAB0098306C /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9FB14E62AA3BCAB0098306C /* UserSettings.swift */; };
@@ -58,8 +60,10 @@
 		A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportSpotifyPlaylistSheet.swift; sourceTree = "<group>"; };
 		A9E43E6A2A72EF5F00E8B18F /* SongData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongData.swift; sourceTree = "<group>"; };
 		A9EECAFF2A86DDF200C516CB /* AppleMusicClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleMusicClient.swift; sourceTree = "<group>"; };
-		A9EECB012A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmAMTransferPlaylistSheet.swift; sourceTree = "<group>"; };
+		A9EECB012A86EA2800C516CB /* ConfirmTransferToAppleSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmTransferToAppleSheet.swift; sourceTree = "<group>"; };
 		A9EECB032A86EED000C516CB /* SongMatchView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongMatchView.swift; sourceTree = "<group>"; };
+		A9F3E0052AA41CC900AE81B2 /* ImportPlaylistGeneralView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportPlaylistGeneralView.swift; sourceTree = "<group>"; };
+		A9F3E0072AA4352A00AE81B2 /* ConfirmTransferToSpotifySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmTransferToSpotifySheet.swift; sourceTree = "<group>"; };
 		A9F3EAF42AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportApplePlaylistSheet.swift; sourceTree = "<group>"; };
 		A9FB14E42AA3B9F90098306C /* SourceMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SourceMenuView.swift; sourceTree = "<group>"; };
 		A9FB14E62AA3BCAB0098306C /* UserSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSettings.swift; sourceTree = "<group>"; };
@@ -101,11 +105,13 @@
 				A9FC2E422A72ED06009F2BE4 /* ContentView.swift */,
 				A9E1399C2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift */,
 				A9F3EAF42AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift */,
+				A9F3E0052AA41CC900AE81B2 /* ImportPlaylistGeneralView.swift */,
 				A9FB14E42AA3B9F90098306C /* SourceMenuView.swift */,
 				A902205D2A8537170016E00D /* ImportPlaylistView.swift */,
 				A9C80A742A81D25B005C35A1 /* PlaylistDetailView.swift */,
 				A998F8C02A85563600D33EDA /* PlaylistDetailWithOptionsView.swift */,
-				A9EECB012A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift */,
+				A9EECB012A86EA2800C516CB /* ConfirmTransferToAppleSheet.swift */,
+				A9F3E0072AA4352A00AE81B2 /* ConfirmTransferToSpotifySheet.swift */,
 				A9EECB032A86EED000C516CB /* SongMatchView.swift */,
 				A94FA6912A8EA24600ADCB22 /* SongMatchPicker.swift */,
 				A9BC66192A802D8F00D0646C /* PlaylistRow.swift */,
@@ -247,6 +253,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9F3E0062AA41CC900AE81B2 /* ImportPlaylistGeneralView.swift in Sources */,
 				A9BC661A2A802D8F00D0646C /* PlaylistRow.swift in Sources */,
 				A9BB16A32A7336C8002BCCFD /* WelcomeDetailRow.swift in Sources */,
 				A9134E042A73EA0E00968834 /* MainView.swift in Sources */,
@@ -266,10 +273,11 @@
 				A94FA6922A8EA24600ADCB22 /* SongMatchPicker.swift in Sources */,
 				A9C80A752A81D25B005C35A1 /* PlaylistDetailView.swift in Sources */,
 				A9EECB002A86DDF200C516CB /* AppleMusicClient.swift in Sources */,
-				A9EECB022A86EA2800C516CB /* ConfirmAMTransferPlaylistSheet.swift in Sources */,
+				A9EECB022A86EA2800C516CB /* ConfirmTransferToAppleSheet.swift in Sources */,
 				A9BB169F2A732A84002BCCFD /* WelcomeSheet.swift in Sources */,
 				A9FB14E52AA3B9F90098306C /* SourceMenuView.swift in Sources */,
 				A9FC2E412A72ED06009F2BE4 /* SimpleMusicApp.swift in Sources */,
+				A9F3E0082AA4352A00AE81B2 /* ConfirmTransferToSpotifySheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

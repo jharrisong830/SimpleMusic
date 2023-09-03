@@ -14,16 +14,33 @@ struct PlaylistDetailView: View {
     
     var body: some View {
         List {
-            ForEach(songs) { song in
-                SongRow(song: song)
+            if songs.isEmpty {
+                ProgressView()
+            }
+            else {
+                ForEach(songs) { song in
+                    SongRow(song: song)
+                }
             }
         }
         .navigationTitle(playlist.name)
         .task {
-            do {
-                songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
-            } catch {
-                print("error loading songs")
+            switch playlist.sourcePlatform {
+            case .spotify:
+                do {
+                    if SpotifyClient().checkRefresh() {
+                        try await SpotifyClient().getRefreshToken()
+                    }
+                    songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
+                } catch {
+                    print("error loading songs")
+                }
+            case .appleMusic:
+                do {
+                    songs = try await AppleMusicClient().getPlaylistSongs(playlistID: playlist.amid)
+                } catch {
+                    print("error loading songs")
+                }
             }
         }
     }

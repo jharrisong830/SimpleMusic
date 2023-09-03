@@ -15,7 +15,8 @@ struct PlaylistDetailWithOptionsView: View {
     @Binding var navPath: [PlaylistData]
     
     @State private var songs: [SongData] = []
-    @State private var isPresented = false
+    @State private var isTransferingToApple = false
+    @State private var isTransferingToSpotify = false
     
     var body: some View {
 //        List {
@@ -29,13 +30,25 @@ struct PlaylistDetailWithOptionsView: View {
 //        }
         List {
             Section {
-                Button {
-                    Task {
-                        isPresented = true
+                switch playlist.sourcePlatform {
+                case.appleMusic:
+                    Button {
+                        Task {
+                            isTransferingToSpotify = true
+                        }
+                    } label: {
+                        Text("Transfer to Spotify")
+                            .foregroundStyle(.green)
                     }
-                } label: {
-                    Text("Transfer to Apple Music")
-                        .foregroundStyle(.pink)
+                case .spotify:
+                    Button {
+                        Task {
+                            isTransferingToApple = true
+                        }
+                    } label: {
+                        Text("Transfer to Apple Music")
+                            .foregroundStyle(.pink)
+                    }
                 }
                 Button {
                     modelContext.delete(playlist)
@@ -57,17 +70,29 @@ struct PlaylistDetailWithOptionsView: View {
         }
         .navigationTitle(playlist.name)
         .task {
-            do {
-                if SpotifyClient().checkRefresh() {
-                    try await SpotifyClient().getRefreshToken()
+            switch playlist.sourcePlatform {
+            case .spotify:
+                do {
+                    if SpotifyClient().checkRefresh() {
+                        try await SpotifyClient().getRefreshToken()
+                    }
+                    songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
+                } catch {
+                    print("error loading songs")
                 }
-                songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
-            } catch {
-                print("error loading songs")
+            case .appleMusic:
+                do {
+                    songs = try await AppleMusicClient().getPlaylistSongs(playlistID: playlist.amid)
+                } catch {
+                    print("error loading songs")
+                }
             }
         }
-        .sheet(isPresented: $isPresented) {
-            ConfirmAMTransferPlaylistSheet(playlist: playlist, spotifySongs: $songs, isPresented: $isPresented)
+        .sheet(isPresented: $isTransferingToApple) {
+            ConfirmTransferToAppleSheet(playlist: playlist, spotifySongs: $songs, isPresented: $isTransferingToApple)
+        }
+        .sheet(isPresented: $isTransferingToSpotify) {
+            ConfirmTransferToSpotifySheet(playlist: playlist, appleSongs: $songs, isPresented: $isTransferingToSpotify)
         }
     }
     

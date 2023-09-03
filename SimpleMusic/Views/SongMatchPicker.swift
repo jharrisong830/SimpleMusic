@@ -45,14 +45,16 @@ struct SongMatchPicker: View {
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        song.name = selection.name
-                        song.artists = selection.artists
-                        song.albumName = selection.albumName
-                        song.albumArtists = selection.albumArtists
-                        song.isrc = selection.isrc
-                        song.amid = selection.amid
-                        song.spid = selection.spid
-                        song.coverImage = selection.coverImage
+                        if selection != SongData.emptySong {
+                            song.name = selection.name
+                            song.artists = selection.artists
+                            song.albumName = selection.albumName
+                            song.albumArtists = selection.albumArtists
+                            song.isrc = selection.isrc
+                            song.amid = selection.amid
+                            song.spid = selection.spid
+                            song.coverImage = selection.coverImage
+                        }
                         isPresented = false
                     } label: {
                         Text("Done")
