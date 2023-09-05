@@ -34,8 +34,8 @@ struct SettingsView: View {
                         let params = [
                             "response_type": "code",
                             "client_id": spClient,
-                            "scope": "playlist-read-private",
-                            "redirect_uri": redirect
+                            "redirect_uri": redirect,
+                            "scope": "playlist-read-private playlist-modify-private playlist-modify-public"
                         ]
                         let paramsURL = params.map {
                             "\($0)=\($1)"

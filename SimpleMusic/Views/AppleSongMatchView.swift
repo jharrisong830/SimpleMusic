@@ -8,7 +8,7 @@
 import SwiftUI
 import MusicKit
 
-struct SongMatchView: View {
+struct AppleSongMatchView: View {
     @Binding var song: SongData
     
     @State private var searchText = ""
@@ -21,11 +21,25 @@ struct SongMatchView: View {
                 Section {
                     HStack {
                         SongRow(song: song)
-                        if song.amid.isEmpty {
+                        if song.matchState != .successful {
                             Spacer()
                             Image(systemName: "xmark.circle.fill")
                                 .symbolRenderingMode(.multicolor)
                         }
+                    }
+                    HStack {
+                        Text("ISRC")
+                        Spacer()
+                        Text(song.isrc)
+                            .foregroundStyle(.secondary)
+                            .fontDesign(.monospaced)
+                    }
+                    HStack {
+                        Text("Apple Music ID")
+                        Spacer()
+                        Text(song.amid)
+                            .foregroundStyle(.secondary)
+                            .fontDesign(.monospaced)
                     }
                 }
                 Section {

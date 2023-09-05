@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ConfirmTransferToAppleSheet: View {
     @Bindable var playlist: PlaylistData
-    @Binding var spotifySongs: [SongData]
     @Binding var isPresented: Bool
     
     @State private var isMatchComplete = false
@@ -29,17 +28,17 @@ struct ConfirmTransferToAppleSheet: View {
                         HStack {
                             Text("To Be Checked")
                             Spacer()
-                            Text("\(matchedSongs.reduce(0, {$1.amid.isEmpty ? $0+1 : $0}))")
+                            Text("\(matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}))")
                                 .foregroundStyle(.red)
                         }
                     } header: {
                         Text("Details")
                     }
-                    if matchedSongs.reduce(0, {$1.amid.isEmpty ? $0+1 : $0}) != 0 {
+                    if matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 {
                         Section {
                             ForEach($matchedSongs) { $song in
-                                if song.amid.isEmpty {
-                                    NavigationLink(destination: SongMatchView(song: $song)) {
+                                if song.matchState != .successful {
+                                    NavigationLink(destination: AppleSongMatchView(song: $song)) {
                                         HStack {
                                             SongRow(song: song)
                                             Spacer()
@@ -55,8 +54,8 @@ struct ConfirmTransferToAppleSheet: View {
                     }
                     Section {
                         ForEach($matchedSongs) { $song in
-                            if !song.amid.isEmpty {
-                                NavigationLink(destination: SongMatchView(song: $song)) {
+                            if song.matchState == .successful {
+                                NavigationLink(destination: AppleSongMatchView(song: $song)) {
                                     HStack {
                                         SongRow(song: song)
                                         Spacer()
@@ -89,9 +88,9 @@ struct ConfirmTransferToAppleSheet: View {
                             isPresented = false
                         } label: {
                             Text("Add")
-                                .foregroundStyle(matchedSongs.reduce(0, {$1.amid.isEmpty ? $0+1 : $0}) != 0 ? .gray : .pink)
+                                .foregroundStyle(matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 ? .gray : .pink)
                         }
-                        .disabled(matchedSongs.reduce(0, {$1.amid.isEmpty ? $0+1 : $0}) != 0)
+                        .disabled(matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0)
                     }
                 }
             }

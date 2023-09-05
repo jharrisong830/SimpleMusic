@@ -54,6 +54,7 @@ struct SongMatchPicker: View {
                             song.amid = selection.amid
                             song.spid = selection.spid
                             song.coverImage = selection.coverImage
+                            song.matchState = .successful
                         }
                         isPresented = false
                     } label: {

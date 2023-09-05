@@ -26,6 +26,7 @@ class AppleMusicClient {
                 let songDataArray = (jsonData["data"] as! [JSONObject])
                 if songDataArray.isEmpty {
                     print("Nothing found for \(song.name), skipping...")
+                    song.matchState = .failed
                 }
                 else {
                     let songData = songDataArray[0]
@@ -35,6 +36,7 @@ class AppleMusicClient {
                     let amSong = try await amSongReq.response()
                     song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)!.absoluteString
                     matches += 1
+                    song.matchState = .successful
                 }
             }
         }
@@ -42,7 +44,7 @@ class AppleMusicClient {
         return songs
     }
     
-    func createNewPlaylist(name: String, description: String?) async throws -> MusicItemID {
+    func createNewPlaylist(name: String, description: String?) async throws -> String {
         let playlistData = [
             "attributes": [
                 "name": name,
@@ -54,10 +56,10 @@ class AppleMusicClient {
         musicURL.httpBody = try JSONSerialization.data(withJSONObject: playlistData)
         let musicReq = MusicDataRequest(urlRequest: musicURL)
         let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
-        return (jsonData["data"] as! [JSONObject])[0]["id"] as! MusicItemID
+        return (jsonData["data"] as! [JSONObject])[0]["id"] as! String
     }
     
-    func addSongsToPlaylist(AMPlaylistID: MusicItemID, songs: [SongData]) async throws {
+    func addSongsToPlaylist(AMPlaylistID: String, songs: [SongData]) async throws {
         let reqSongData = ["data": songs.map({["id": $0.amid, "type": "songs"]})]
         var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(AMPlaylistID)/tracks")!)
         musicURL.httpMethod = "POST"
@@ -92,7 +94,7 @@ class AppleMusicClient {
             (($0["attributes"] as! JSONObject)["playParams"] as! JSONObject)["catalogId"] as! String
         }
         for id in allIDs {
-            var resourceReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(id))
+            let resourceReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(id))
             let resourceResponse = try await resourceReq.response().items[0]
             allSongs.append(SongData(name: resourceResponse.title,
                                      artists: [resourceResponse.artistName],

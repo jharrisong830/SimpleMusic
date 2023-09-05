@@ -89,10 +89,10 @@ struct PlaylistDetailWithOptionsView: View {
             }
         }
         .sheet(isPresented: $isTransferingToApple) {
-            ConfirmTransferToAppleSheet(playlist: playlist, spotifySongs: $songs, isPresented: $isTransferingToApple)
+            ConfirmTransferToAppleSheet(playlist: playlist, isPresented: $isTransferingToApple)
         }
         .sheet(isPresented: $isTransferingToSpotify) {
-            ConfirmTransferToSpotifySheet(playlist: playlist, appleSongs: $songs, isPresented: $isTransferingToSpotify)
+            ConfirmTransferToSpotifySheet(playlist: playlist, isPresented: $isTransferingToSpotify)
         }
     }
     

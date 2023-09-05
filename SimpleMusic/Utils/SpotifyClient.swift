@@ -76,6 +76,18 @@ class SpotifyClient {
     }
     
     
+    func getUserID() async throws -> String {
+        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+        
+        var userReq = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/me")!)
+        userReq.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        
+        let (data, _) = try await URLSession.shared.data(for: userReq)
+        let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+        
+        return jsonData["id"] as! String
+    }
+    
     func getPrivatePlaylists() async throws -> [PlaylistData] {
         var allPlaylists: [PlaylistData] = []
         
@@ -145,5 +157,88 @@ class SpotifyClient {
         return allSongs
     }
     
+    
+    
+    func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
+        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+        
+        let songs = try await AppleMusicClient().getPlaylistSongs(playlistID: playlist.amid)
+        
+        for song in songs {
+            var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=isrc:\(song.isrc)&type=track")!)
+            searchRequest.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+            
+            let (data, _) = try await URLSession.shared.data(for: searchRequest)
+            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+            if (jsonData["tracks"] as! JSONObject)["total"] as! Int != 0 {
+                song.spid = ((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["id"] as! String
+                song.coverImage = ((((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String
+                song.matchState = .successful
+            }
+            else {
+                song.matchState = .failed
+            }
+        }
+        return songs
+    }
+    
+    
+    func searchSpotifyCatalog(searchText: String) async throws -> [SongData] {
+        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+        
+        var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=\(searchText)&type=track")!)
+        searchRequest.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        
+        let (data, _) = try await URLSession.shared.data(for: searchRequest)
+        let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+        
+        let searchResults = (jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject]
+        
+        return searchResults.map {
+            SongData(name: $0["name"] as! String,
+                     artists: ($0["artists"] as! [JSONObject]).map({$0["name"] as! String}),
+                     albumName: ($0["album"] as! JSONObject)["name"] as! String,
+                     albumArtists: (($0["album"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
+                     isrc: ($0["external_ids"] as! JSONObject)["isrc"] as! String,
+                     amid: "",
+                     spid: $0["id"] as! String,
+                     coverImage: (($0["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String)
+        }
+    }
+    
+    
+    func createNewPlaylist(name: String, description: String?) async throws -> String {
+        let playlistData = [
+            "name": name,
+            "description": description
+        ]
+        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+        let userID = try await getUserID()
+        
+        var playlistReq = HTTPRequest(method: .post, url: URL(string: "https://api.spotify.com/v1/users/\(userID)/playlists")!)
+        playlistReq.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        
+        let (data, _) = try await URLSession.shared.upload(for: playlistReq, from: try JSONSerialization.data(withJSONObject: playlistData))
+        let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+        print(jsonData)
+        
+        return jsonData["id"] as! String
+    }
+    
+    func addSongsToPlaylist(spotifyPlaylistID: String, songs: [SongData]) async throws {
+        let URIBody: [String: Any] = [
+            "uris": songs.map({"spotify:track:\($0.spid)"}),
+            "position": 0
+        ]
+        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+        
+        var playlistReq = HTTPRequest(method: .post, url: URL(string: "https://api.spotify.com/v1/playlists/\(spotifyPlaylistID)/tracks")!)
+        playlistReq.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        
+        let (data, _) = try await URLSession.shared.upload(for: playlistReq, from: try JSONSerialization.data(withJSONObject: URIBody))
+        let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+        print("WE DID IT JOE")
+        print(jsonData)
+    }
     
 }
