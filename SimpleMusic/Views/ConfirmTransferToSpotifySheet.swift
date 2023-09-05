@@ -13,6 +13,7 @@ struct ConfirmTransferToSpotifySheet: View {
     
     @State private var isMatchComplete = false
     @State private var matchedSongs: [SongData] = []
+    @State private var presentIncompleteMatchAlert = false
     
     var body: some View {
         NavigationStack {
@@ -80,21 +81,43 @@ struct ConfirmTransferToSpotifySheet: View {
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button {
-                            Task {
-                                // TODO: let newPlaylistID = try await AppleMusicClient().createNewPlaylist(name: playlist.name, description: "")
-                                // TODO: print(newPlaylistID)
-                                // TODO: try await AppleMusicClient().addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
-                                let newPlaylistID = try await SpotifyClient().createNewPlaylist(name: playlist.name, description: "")
-                                print(newPlaylistID)
-                                try await SpotifyClient().addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                            if matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 {
+                                presentIncompleteMatchAlert = true
                             }
-                            isPresented = false
+                            else {
+                                Task {
+                                    let newPlaylistID = try await SpotifyClient().createNewPlaylist(name: playlist.name, description: "")
+                                    print(newPlaylistID)
+                                    try await SpotifyClient().addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                                }
+                                isPresented = false
+                            }
                         } label: {
                             Text("Add")
-                                .foregroundStyle(matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 ? .gray : .green)
+                                .foregroundStyle(.green)
                         }
-                        .disabled(matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0)
                     }
+                }
+                .alert("Incomplete Match", isPresented: $presentIncompleteMatchAlert) {
+                    Button(role: .cancel) {
+                        
+                    } label: {
+                        Text("No")
+                    }
+                    Button {
+                        Task {
+                            matchedSongs.removeAll(where: {$0.matchState != .successful})
+                            print(matchedSongs.count)
+                            let newPlaylistID = try await SpotifyClient().createNewPlaylist(name: playlist.name, description: "")
+                            print(newPlaylistID)
+                            try await SpotifyClient().addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                        }
+                        isPresented = false
+                    } label: {
+                        Text("Yes")
+                    }
+                } message: {
+                    Text("There are some songs that haven't been matched to a song on Spotify. You can still transfer this playlist, but the unmatched songs will be missing. Are you sure you want to continue?")
                 }
             }
             else {
