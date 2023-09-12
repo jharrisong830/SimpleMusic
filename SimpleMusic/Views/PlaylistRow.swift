@@ -20,7 +20,7 @@ struct PlaylistRow: View {
                 RoundedRectangle(cornerRadius: 5)
                     .frame(width: 64, height: 64)
                     .foregroundStyle(.gray)
-                    .overlay(content: {Image(systemName: "questionmark").foregroundStyle(.green)})
+                    .overlay(content: {Image(systemName: "questionmark.app.dashed").foregroundStyle(playlist.sourcePlatform == .spotify ? .green : .pink)})
             }
             Text(playlist.name)
         }

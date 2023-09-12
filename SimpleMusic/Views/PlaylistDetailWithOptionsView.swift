@@ -30,6 +30,52 @@ struct PlaylistDetailWithOptionsView: View {
 //        }
         List {
             Section {
+                HStack {
+                    Text("Name")
+                    Spacer()
+                    Text(playlist.name)
+                        .foregroundStyle(.secondary)
+                }
+                HStack {
+                    Text("Platform")
+                    Spacer()
+                    switch playlist.sourcePlatform {
+                    case .appleMusic:
+                        Image("AM Logo")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    case .spotify:
+                        Image("Spotify Logo")
+                            .resizable()
+                            .frame(width: 20, height: 20)
+                    }
+                }
+                HStack {
+                    switch playlist.sourcePlatform {
+                    case .appleMusic:
+                        Text("Apple Music ID")
+                        Spacer()
+                        Text(playlist.amid)
+                            .foregroundStyle(.secondary)
+                            .fontDesign(.monospaced)
+                    case .spotify:
+                        Text("Spotify ID")
+                        Spacer()
+                        Text(playlist.spid)
+                            .foregroundStyle(.secondary)
+                            .fontDesign(.monospaced)
+                    }
+                }
+                HStack {
+                    Text("Total Songs")
+                    Spacer()
+                    Text("\(songs.count)")
+                        .foregroundStyle(.secondary)
+                }
+            } header: {
+                Text("Details")
+            }
+            Section {
                 switch playlist.sourcePlatform {
                 case.appleMusic:
                     Button {

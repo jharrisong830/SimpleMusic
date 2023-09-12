@@ -19,8 +19,8 @@ struct SongRow: View {
             } placeholder: {
                 RoundedRectangle(cornerRadius: 2.5)
                     .frame(width: 37.5, height: 37.5)
-                    .foregroundStyle(.gray)
-                    .overlay(content: {Image(systemName: "questionmark").foregroundStyle(.green)})
+                    .foregroundStyle(.gray.opacity(0.5))
+                    .overlay(content: {Image(systemName: "questionmark.app.dashed").foregroundStyle(.blue)})
             }
             VStack(alignment: .leading) {
                 Text(song.name)
