@@ -31,7 +31,7 @@ struct ImportApplePlaylistSheet: View {
             }
             .task {
                 do {
-                    newplaylists = try await AppleMusicClient().getPlaylists()
+                    newplaylists = try await AppleMusicClient.getPlaylists()
                 } catch {
                     isPresented = false
                 }

@@ -86,9 +86,9 @@ struct ConfirmTransferToAppleSheet: View {
                             }
                             else {
                                 Task {
-                                    let newPlaylistID = try await AppleMusicClient().createNewPlaylist(name: playlist.name, description: "")
+                                    let newPlaylistID = try await AppleMusicClient.createNewPlaylist(name: playlist.name, description: "")
                                     print(newPlaylistID)
-                                    try await AppleMusicClient().addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
+                                    try await AppleMusicClient.addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
                                 }
                                 isPresented = false
                             }
@@ -108,9 +108,9 @@ struct ConfirmTransferToAppleSheet: View {
                         Task {
                             matchedSongs.removeAll(where: {$0.matchState != .successful})
                             print(matchedSongs.count)
-                            let newPlaylistID = try await AppleMusicClient().createNewPlaylist(name: playlist.name, description: "")
+                            let newPlaylistID = try await AppleMusicClient.createNewPlaylist(name: playlist.name, description: "")
                             print(newPlaylistID)
-                            try await AppleMusicClient().addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
+                            try await AppleMusicClient.addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
                         }
                         isPresented = false
                     } label: {
@@ -142,7 +142,7 @@ struct ConfirmTransferToAppleSheet: View {
         }
         .task {
             do {
-                matchedSongs = try await AppleMusicClient().getSongMatches(playlist: playlist)
+                matchedSongs = try await AppleMusicClient.getSongMatches(playlist: playlist)
                 isMatchComplete = true
             } catch {
                 print("error")

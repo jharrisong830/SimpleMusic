@@ -11,8 +11,8 @@ import KeychainAccess
 
 
 class AppleMusicClient {
-    func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
-        let songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
+    static func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
+        let songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
         let total = songs.count
         var matches = 0
         for song in songs {
@@ -44,7 +44,7 @@ class AppleMusicClient {
         return songs
     }
     
-    func createNewPlaylist(name: String, description: String?) async throws -> String {
+    static func createNewPlaylist(name: String, description: String?) async throws -> String {
         let playlistData = [
             "attributes": [
                 "name": name,
@@ -59,7 +59,7 @@ class AppleMusicClient {
         return (jsonData["data"] as! [JSONObject])[0]["id"] as! String
     }
     
-    func addSongsToPlaylist(AMPlaylistID: String, songs: [SongData]) async throws {
+    static func addSongsToPlaylist(AMPlaylistID: String, songs: [SongData]) async throws {
         let reqSongData = ["data": songs.map({["id": $0.amid, "type": "songs"]})]
         var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(AMPlaylistID)/tracks")!)
         musicURL.httpMethod = "POST"
@@ -69,7 +69,7 @@ class AppleMusicClient {
         print(jsonData)
     }
     
-    func getPlaylists() async throws -> [PlaylistData] {
+    static func getPlaylists() async throws -> [PlaylistData] {
         var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists")!)
         musicURL.httpMethod = "GET"
         let musicReq = MusicDataRequest(urlRequest: musicURL)
@@ -82,7 +82,7 @@ class AppleMusicClient {
         return allPlaylists
     }
     
-    func getPlaylistSongs(playlistID: String) async throws -> [SongData] {
+    static func getPlaylistSongs(playlistID: String) async throws -> [SongData] {
         var allSongs: [SongData] = []
         
         var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(playlistID)/tracks")!)

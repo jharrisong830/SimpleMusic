@@ -28,16 +28,16 @@ struct PlaylistDetailView: View {
             switch playlist.sourcePlatform {
             case .spotify:
                 do {
-                    if SpotifyClient().checkRefresh() {
-                        try await SpotifyClient().getRefreshToken()
+                    if SpotifyClient.checkRefresh() {
+                        try await SpotifyClient.getRefreshToken()
                     }
-                    songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
+                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
                 } catch {
                     print("error loading songs")
                 }
             case .appleMusic:
                 do {
-                    songs = try await AppleMusicClient().getPlaylistSongs(playlistID: playlist.amid)
+                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.amid)
                 } catch {
                     print("error loading songs")
                 }

@@ -30,10 +30,10 @@ struct ImportSpotifyPlaylistSheet: View {
             }
             .task {
                 do {
-                    if SpotifyClient().checkRefresh() {
-                        try await SpotifyClient().getRefreshToken()
+                    if SpotifyClient.checkRefresh() {
+                        try await SpotifyClient.getRefreshToken()
                     }
-                    newplaylists = try await SpotifyClient().getPrivatePlaylists()
+                    newplaylists = try await SpotifyClient.getPrivatePlaylists()
                 } catch {
                     isPresented = false
                 }

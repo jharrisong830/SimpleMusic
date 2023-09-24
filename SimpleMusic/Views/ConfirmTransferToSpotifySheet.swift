@@ -86,9 +86,9 @@ struct ConfirmTransferToSpotifySheet: View {
                             }
                             else {
                                 Task {
-                                    let newPlaylistID = try await SpotifyClient().createNewPlaylist(name: playlist.name, description: "")
+                                    let newPlaylistID = try await SpotifyClient.createNewPlaylist(name: playlist.name, description: "")
                                     print(newPlaylistID)
-                                    try await SpotifyClient().addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                                    try await SpotifyClient.addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
                                 }
                                 isPresented = false
                             }
@@ -108,9 +108,9 @@ struct ConfirmTransferToSpotifySheet: View {
                         Task {
                             matchedSongs.removeAll(where: {$0.matchState != .successful})
                             print(matchedSongs.count)
-                            let newPlaylistID = try await SpotifyClient().createNewPlaylist(name: playlist.name, description: "")
+                            let newPlaylistID = try await SpotifyClient.createNewPlaylist(name: playlist.name, description: "")
                             print(newPlaylistID)
-                            try await SpotifyClient().addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                            try await SpotifyClient.addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
                         }
                         isPresented = false
                     } label: {
@@ -142,7 +142,7 @@ struct ConfirmTransferToSpotifySheet: View {
         }
         .task {
             do {
-                matchedSongs = try await SpotifyClient().getSongMatches(playlist: playlist)
+                matchedSongs = try await SpotifyClient.getSongMatches(playlist: playlist)
                 isMatchComplete = true
             } catch {
                 print("error")

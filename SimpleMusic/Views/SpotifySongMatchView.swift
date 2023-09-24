@@ -56,7 +56,7 @@ struct SpotifySongMatchView: View {
 //                                searchText = ""
 //                            }
                             Task {
-                                searchResults = try await SpotifyClient().searchSpotifyCatalog(searchText: searchText)
+                                searchResults = try await SpotifyClient.searchSpotifyCatalog(searchText: searchText)
                                 isPresented = true
                                 searchText = ""
                             }

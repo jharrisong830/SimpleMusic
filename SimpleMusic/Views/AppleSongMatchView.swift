@@ -57,6 +57,7 @@ struct AppleSongMatchView: View {
                                 searchText = ""
                             }
                         }
+                        .submitLabel(.search)
                 } header: {
                     Text("Rematch")
                 }

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A902205E2A8537170016E00D /* ImportPlaylistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A902205D2A8537170016E00D /* ImportPlaylistView.swift */; };
+		A9022EAB2ABB3ACB005C655E /* YouTubeClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9022EAA2ABB3ACB005C655E /* YouTubeClient.swift */; };
 		A90D569F2A8FF021006E9E41 /* HTTPTypes in Frameworks */ = {isa = PBXBuildFile; productRef = A90D569E2A8FF021006E9E41 /* HTTPTypes */; };
 		A90D56A12A8FF021006E9E41 /* HTTPTypesFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = A90D56A02A8FF021006E9E41 /* HTTPTypesFoundation */; };
 		A9134E042A73EA0E00968834 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9134E032A73EA0E00968834 /* MainView.swift */; };
@@ -43,6 +44,7 @@
 
 /* Begin PBXFileReference section */
 		A902205D2A8537170016E00D /* ImportPlaylistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportPlaylistView.swift; sourceTree = "<group>"; };
+		A9022EAA2ABB3ACB005C655E /* YouTubeClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeClient.swift; sourceTree = "<group>"; };
 		A9134E032A73EA0E00968834 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		A9134E052A73EA8B00968834 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		A9181A722A7C5C90007E3AF2 /* SpotifyClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyClient.swift; sourceTree = "<group>"; };
@@ -132,6 +134,7 @@
 			children = (
 				A9181A722A7C5C90007E3AF2 /* SpotifyClient.swift */,
 				A9EECAFF2A86DDF200C516CB /* AppleMusicClient.swift */,
+				A9022EAA2ABB3ACB005C655E /* YouTubeClient.swift */,
 				A9BB16A02A733133002BCCFD /* ProminentButtonStyle.swift */,
 			);
 			path = Utils;
@@ -278,6 +281,7 @@
 				A9C80A752A81D25B005C35A1 /* PlaylistDetailView.swift in Sources */,
 				A9EECB002A86DDF200C516CB /* AppleMusicClient.swift in Sources */,
 				A9EECB022A86EA2800C516CB /* ConfirmTransferToAppleSheet.swift in Sources */,
+				A9022EAB2ABB3ACB005C655E /* YouTubeClient.swift in Sources */,
 				A9BB169F2A732A84002BCCFD /* WelcomeSheet.swift in Sources */,
 				A9FB14E52AA3B9F90098306C /* SourceMenuView.swift in Sources */,
 				A9FC2E412A72ED06009F2BE4 /* SimpleMusicApp.swift in Sources */,

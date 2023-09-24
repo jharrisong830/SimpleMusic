@@ -18,12 +18,12 @@ extension HTTPField.Name {
 
 
 class SpotifyClient {
-    private let spClient = "6dd07b58beda42a796654e331dcd99bd"
-    private let redirect = "simple-music://"
+    static private let spClient = "6dd07b58beda42a796654e331dcd99bd"
+    static private let redirect = "simple-music://"
     
     
     
-    func initialAccessAuth(authCode: String) async throws {
+    static func initialAccessAuth(authCode: String) async throws {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         let api_key = Bundle.main.infoDictionary?["API_KEY"] as? String
         
@@ -46,7 +46,7 @@ class SpotifyClient {
     }
     
     
-    func checkRefresh() -> Bool {
+    static func checkRefresh() -> Bool {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         guard let expiryTime = Double(keychain["access_expiration"]!) else {
             return true
@@ -54,7 +54,7 @@ class SpotifyClient {
         return Date.now.timeIntervalSince1970 > expiryTime // returns true if key needs to be refreshed, false if okay
     }
     
-    func getRefreshToken() async throws {
+    static func getRefreshToken() async throws {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         let api_key = Bundle.main.infoDictionary?["API_KEY"] as? String
         
@@ -76,7 +76,7 @@ class SpotifyClient {
     }
     
     
-    func getUserID() async throws -> String {
+    static func getUserID() async throws -> String {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
         var userReq = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/me")!)
@@ -88,7 +88,7 @@ class SpotifyClient {
         return jsonData["id"] as! String
     }
     
-    func getPrivatePlaylists() async throws -> [PlaylistData] {
+    static func getPrivatePlaylists() async throws -> [PlaylistData] {
         var allPlaylists: [PlaylistData] = []
         
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
@@ -120,7 +120,7 @@ class SpotifyClient {
     }
     
     
-    func getPlaylistSongs(playlistID: String) async throws -> [SongData] {
+    static func getPlaylistSongs(playlistID: String) async throws -> [SongData] {
         var allSongs: [SongData] = []
         
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
@@ -159,10 +159,10 @@ class SpotifyClient {
     
     
     
-    func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
+    static func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
-        let songs = try await AppleMusicClient().getPlaylistSongs(playlistID: playlist.amid)
+        let songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.amid)
         
         for song in songs {
             var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=isrc:\(song.isrc)&type=track")!)
@@ -183,7 +183,7 @@ class SpotifyClient {
     }
     
     
-    func searchSpotifyCatalog(searchText: String) async throws -> [SongData] {
+    static func searchSpotifyCatalog(searchText: String) async throws -> [SongData] {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
         var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=\(searchText)&type=track")!)
@@ -207,7 +207,7 @@ class SpotifyClient {
     }
     
     
-    func createNewPlaylist(name: String, description: String?) async throws -> String {
+    static func createNewPlaylist(name: String, description: String?) async throws -> String {
         let playlistData = [
             "name": name,
             "description": description
@@ -225,7 +225,7 @@ class SpotifyClient {
         return jsonData["id"] as! String
     }
     
-    func addSongsToPlaylist(spotifyPlaylistID: String, songs: [SongData]) async throws {
+    static func addSongsToPlaylist(spotifyPlaylistID: String, songs: [SongData]) async throws {
         let URIBody: [String: Any] = [
             "uris": songs.map({"spotify:track:\($0.spid)"}),
             "position": 0

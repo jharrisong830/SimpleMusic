@@ -7,9 +7,12 @@
 
 import SwiftUI
 import MusicKit
+import SwiftData
 
 struct PlaylistDetailWithOptionsView: View {
     @Environment(\.modelContext) private var modelContext
+    
+    @Query private var userSettings: [UserSettings]
     
     @Bindable var playlist: PlaylistData
     @Binding var navPath: [PlaylistData]
@@ -78,22 +81,26 @@ struct PlaylistDetailWithOptionsView: View {
             Section {
                 switch playlist.sourcePlatform {
                 case.appleMusic:
-                    Button {
-                        Task {
-                            isTransferingToSpotify = true
+                    if userSettings[0].spotifyActive {
+                        Button {
+                            Task {
+                                isTransferingToSpotify = true
+                            }
+                        } label: {
+                            Text("Transfer to Spotify")
+                                .foregroundStyle(.green)
                         }
-                    } label: {
-                        Text("Transfer to Spotify")
-                            .foregroundStyle(.green)
                     }
                 case .spotify:
-                    Button {
-                        Task {
-                            isTransferingToApple = true
+                    if MusicAuthorization.currentStatus == .authorized {
+                        Button {
+                            Task {
+                                isTransferingToApple = true
+                            }
+                        } label: {
+                            Text("Transfer to Apple Music")
+                                .foregroundStyle(.pink)
                         }
-                    } label: {
-                        Text("Transfer to Apple Music")
-                            .foregroundStyle(.pink)
                     }
                 }
                 Button {
@@ -119,16 +126,16 @@ struct PlaylistDetailWithOptionsView: View {
             switch playlist.sourcePlatform {
             case .spotify:
                 do {
-                    if SpotifyClient().checkRefresh() {
-                        try await SpotifyClient().getRefreshToken()
+                    if SpotifyClient.checkRefresh() {
+                        try await SpotifyClient.getRefreshToken()
                     }
-                    songs = try await SpotifyClient().getPlaylistSongs(playlistID: playlist.spid)
+                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
                 } catch {
                     print("error loading songs")
                 }
             case .appleMusic:
                 do {
-                    songs = try await AppleMusicClient().getPlaylistSongs(playlistID: playlist.amid)
+                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.amid)
                 } catch {
                     print("error loading songs")
                 }

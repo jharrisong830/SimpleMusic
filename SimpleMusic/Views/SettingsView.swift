@@ -55,7 +55,7 @@ struct SettingsView: View {
                             
                             // access and refresh codes
                             do {
-                                try await SpotifyClient().initialAccessAuth(authCode: spAuthCode!)
+                                try await SpotifyClient.initialAccessAuth(authCode: spAuthCode!)
                             } catch {
                                 authRequestFailed = true
                                 print("Failed to get ACCESS CODE")
@@ -74,7 +74,7 @@ struct SettingsView: View {
                         .listRowBackground(Color.green)
                     Button {
                         Task {
-                            try await SpotifyClient().getRefreshToken()
+                            try await SpotifyClient.getRefreshToken()
                         }
                     } label: {
                         Text("Try Refresh")
@@ -112,6 +112,79 @@ struct SettingsView: View {
                     Text("Couldn't access your Apple Music account. Please enable access in your device settings.")
                 }
             }
+            
+            
+            Section(header: Text("YouTube"), footer: Text("Connect to your YouTube account to transfer playlists between your music services.")) {
+                if !userSettings[0].spotifyActive {
+                    Button(action: {
+                        let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
+                        let api_key = Bundle.main.infoDictionary?["GOOGLE_CLIENT"] as? String
+                        
+                        let params = [
+                            "response_type": "code",
+                            "client_id": api_key!,
+                            "redirect_uri": "com.googleusercontent.apps.246281019333-flnmf3geqs3h7lvequcisei2b647vktb:/simple-music",
+                            "scope": "https://www.googleapis.com/auth/youtube"
+                        ]
+                        let paramsURL = params.map {
+                            "\($0)=\($1)"
+                        }.joined(separator: "&")
+                        let ytURL = URL(string: "https://accounts.google.com/o/oauth2/v2/auth?" + paramsURL)!
+                        var ytAuthCode: String? = nil
+                        Task {
+                            // authorization code
+                            do {
+                                let callbackWithAuthCode = try await webAuthenticationSession.authenticate(using: ytURL, callbackURLScheme: "simple-music")
+                                print(callbackWithAuthCode.absoluteString)
+                                ytAuthCode = callbackWithAuthCode.absoluteString.replacingOccurrences(of: "simple-music://?code=", with: "")
+                                print(ytAuthCode)
+                            } catch {
+                                authRequestFailed = true
+                                print("Failed to get AUTHORIZATION CODE")
+                                return
+                            }
+                            
+                            // access and refresh codes
+                            do {
+                                
+                            } catch {
+                                authRequestFailed = true
+                                print("Failed to get ACCESS CODE")
+                                return
+                            }
+                            userSettings[0].spotifyActive = true
+                        }
+                    }, label: {
+                        Text("Connect YouTube Account")
+                            .foregroundStyle(.red)
+                    })
+                    .alert("Spotify Authorization Failed", isPresented: $authRequestFailed, actions: {}, message: {Text("Failed to authorize your Spotify account. Please try again later.")})
+                }
+                else {
+                    Text("Account authorized!")
+                        .listRowBackground(Color.red)
+                    Button {
+                        Task {
+                            try await SpotifyClient.getRefreshToken()
+                        }
+                    } label: {
+                        Text("Try Refresh")
+                    }
+                    Button(action: {
+                        do {
+                            try keychain.removeAll()
+                            userSettings[0].spotifyActive = false
+                        } catch {
+                            print("Couldn't sign out")
+                        }
+                    }, label: {
+                        Text("Sign out")
+                            .foregroundStyle(.red)
+                    })
+                }
+            }
+            
+            
         }
         .navigationTitle("Settings")
     }
