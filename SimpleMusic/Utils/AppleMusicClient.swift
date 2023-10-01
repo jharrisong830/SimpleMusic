@@ -7,7 +7,6 @@
 
 import Foundation
 import MusicKit
-import KeychainAccess
 
 
 class AppleMusicClient {
@@ -30,8 +29,9 @@ class AppleMusicClient {
                 }
                 else {
                     let songData = songDataArray[0]
+                    let albumMatchID = parseAlbums(amDataResponse: songDataArray, originalSong: song)
+                    song.amid = albumMatchID ?? songData["id"] as! String
                     print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
-                    song.amid = songData["id"] as! String
                     let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.amid))
                     let amSong = try await amSongReq.response()
                     song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)!.absoluteString
@@ -44,11 +44,21 @@ class AppleMusicClient {
         return songs
     }
     
+    static func parseAlbums(amDataResponse: [JSONObject], originalSong: SongData) -> String? {
+        for song in amDataResponse {
+            let data = song["attributes"] as! JSONObject
+            if data["albumName"] as! String == originalSong.albumName {
+                return song["id"] as? String
+            }
+        }
+        return nil
+    }
+    
     static func createNewPlaylist(name: String, description: String?) async throws -> String {
         let playlistData = [
             "attributes": [
                 "name": name,
-                "description": description
+                "description": description ?? "transferred with <3 by SimpleMusic"
             ]
         ]
         var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists")!)

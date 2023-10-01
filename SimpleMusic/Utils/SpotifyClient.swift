@@ -39,16 +39,18 @@ class SpotifyClient {
         let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
         
         // set codes in keychain
-        try keychain.removeAll()
-        keychain["access_token"] = jsonData["access_token"] as? String
-        keychain["refresh_token"] = jsonData["refresh_token"] as? String
-        keychain["access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
+        try keychain.remove("sp_access_token")
+        try keychain.remove("sp_refresh_token")
+        try keychain.remove("sp_access_expiration")
+        keychain["sp_access_token"] = jsonData["access_token"] as? String
+        keychain["sp_refresh_token"] = jsonData["refresh_token"] as? String
+        keychain["sp_access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
     }
     
     
     static func checkRefresh() -> Bool {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
-        guard let expiryTime = Double(keychain["access_expiration"]!) else {
+        guard let expiryTime = Double(keychain["sp_access_expiration"]!) else {
             return true
         }
         return Date.now.timeIntervalSince1970 > expiryTime // returns true if key needs to be refreshed, false if okay
@@ -58,7 +60,7 @@ class SpotifyClient {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         let api_key = Bundle.main.infoDictionary?["API_KEY"] as? String
         
-        let accessParams = "grant_type=refresh_token&refresh_token=\(keychain["refresh_token"]!)&redirect_uri=\(redirect)"
+        let accessParams = "grant_type=refresh_token&refresh_token=\(keychain["sp_refresh_token"]!)&redirect_uri=\(redirect)"
         var newRequest = HTTPRequest(method: .post, url: URL(string: "https://accounts.spotify.com/api/token")!)
         newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
         
@@ -71,8 +73,8 @@ class SpotifyClient {
         let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
         
         // set codes in keychain
-        keychain["access_token"] = jsonData["access_token"] as? String
-        keychain["access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
+        keychain["sp_access_token"] = jsonData["access_token"] as? String
+        keychain["sp_access_expiration"] = ((jsonData["expires_in"] as! Double) + Date.now.timeIntervalSince1970).description
     }
     
     
@@ -80,7 +82,7 @@ class SpotifyClient {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
         var userReq = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/me")!)
-        userReq.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        userReq.headerFields[.authorization] = "Bearer \(keychain["sp_access_token"]!)"
         
         let (data, _) = try await URLSession.shared.data(for: userReq)
         let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
@@ -99,7 +101,7 @@ class SpotifyClient {
         repeat {
             var playlistReq = URLRequest(url: URL(string: playlistURL!)!)
             playlistReq.httpMethod = "GET"
-            playlistReq.setValue("Bearer \(keychain["access_token"]!)", forHTTPHeaderField: "Authorization")
+            playlistReq.setValue("Bearer \(keychain["sp_access_token"]!)", forHTTPHeaderField: "Authorization")
             
             let (data, response) = try await URLSession.shared.data(for: playlistReq)
             
@@ -131,7 +133,7 @@ class SpotifyClient {
         repeat {
             var songReq = URLRequest(url: URL(string: songURL!)!)
             songReq.httpMethod = "GET"
-            songReq.setValue("Bearer \(keychain["access_token"]!)", forHTTPHeaderField: "Authorization")
+            songReq.setValue("Bearer \(keychain["sp_access_token"]!)", forHTTPHeaderField: "Authorization")
             
             let (data, response) = try await URLSession.shared.data(for: songReq)
             
@@ -166,7 +168,7 @@ class SpotifyClient {
         
         for song in songs {
             var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=isrc:\(song.isrc)&type=track")!)
-            searchRequest.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+            searchRequest.headerFields[.authorization] = "Bearer \(keychain["sp_access_token"]!)"
             
             let (data, _) = try await URLSession.shared.data(for: searchRequest)
             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
@@ -187,7 +189,7 @@ class SpotifyClient {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
         var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=\(searchText)&type=track")!)
-        searchRequest.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        searchRequest.headerFields[.authorization] = "Bearer \(keychain["sp_access_token"]!)"
         
         let (data, _) = try await URLSession.shared.data(for: searchRequest)
         let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
@@ -210,13 +212,13 @@ class SpotifyClient {
     static func createNewPlaylist(name: String, description: String?) async throws -> String {
         let playlistData = [
             "name": name,
-            "description": description
+            "description": description ?? "transferred with <3 by Simple Music"
         ]
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         let userID = try await getUserID()
         
         var playlistReq = HTTPRequest(method: .post, url: URL(string: "https://api.spotify.com/v1/users/\(userID)/playlists")!)
-        playlistReq.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        playlistReq.headerFields[.authorization] = "Bearer \(keychain["sp_access_token"]!)"
         
         let (data, _) = try await URLSession.shared.upload(for: playlistReq, from: try JSONSerialization.data(withJSONObject: playlistData))
         let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
@@ -233,7 +235,7 @@ class SpotifyClient {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
         var playlistReq = HTTPRequest(method: .post, url: URL(string: "https://api.spotify.com/v1/playlists/\(spotifyPlaylistID)/tracks")!)
-        playlistReq.headerFields[.authorization] = "Bearer \(keychain["access_token"]!)"
+        playlistReq.headerFields[.authorization] = "Bearer \(keychain["sp_access_token"]!)"
         
         let (data, _) = try await URLSession.shared.upload(for: playlistReq, from: try JSONSerialization.data(withJSONObject: URIBody))
         let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject

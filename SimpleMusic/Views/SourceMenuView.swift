@@ -14,15 +14,16 @@ struct SourceMenuView: View {
     
     @Binding var isPresentingSpotify: Bool
     @Binding var isPresentingAppleMusic: Bool
+    @Binding var isPresentingYouTube: Bool
     @Binding var currentTab: SelectedTab
     
     var body: some View {
         Menu {
             if userSettings == [] || (userSettings[0].noServicesActive && (MusicAuthorization.currentStatus != .authorized)) {
                 Button {
-                    currentTab = .settings
+                    currentTab = .accounts
                 } label: {
-                    Label("Add services in settings.", systemImage: "xmark.circle.fill")
+                    Label("Add services in Accounts.", systemImage: "xmark.circle.fill")
                 }
             }
             else {
@@ -38,6 +39,13 @@ struct SourceMenuView: View {
                         isPresentingAppleMusic = true
                     } label: {
                         Label("From Apple Music", image: "AM Logo")
+                    }
+                }
+                if userSettings[0].youtubeActive ?? false {
+                    Button {
+                        isPresentingYouTube = true
+                    } label: {
+                        Label("From YouTube", systemImage: "network")
                     }
                 }
             }

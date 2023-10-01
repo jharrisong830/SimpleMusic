@@ -13,7 +13,7 @@ import HTTPTypesFoundation
 
 enum SelectedTab {
     case home
-    case settings
+    case accounts
 }
 
 
@@ -24,14 +24,14 @@ struct MainView: View {
         TabView(selection: $currentTab) {
             ContentView(currentTab: $currentTab)
                 .tabItem {
-                    Label("ContentView", systemImage: "network")
+                    Label("Playlists", systemImage: "play.square.stack.fill")
                 }
                 .tag(SelectedTab.home)
-            SettingsView()
+            AccountsView()
                 .tabItem {
-                    Label("SettingsView", systemImage: "gear")
+                    Label("Accounts", systemImage: "person.2.fill")
                 }
-                .tag(SelectedTab.settings)
+                .tag(SelectedTab.accounts)
         }
     }
 }

@@ -19,6 +19,7 @@ struct ContentView: View {
     @State private var firstLaunch = false
     @State private var isPresentingSpotify = false
     @State private var isPresentingAppleMusic = false
+    @State private var isPresentingYouTube = false
     @State private var navPath: [PlaylistData] = []
     
     func isFirstLaunch() {
@@ -27,39 +28,63 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack(path: $navPath) {
-            List {
-                ForEach(playlists) { playlist in
-                    NavigationLink(value: playlist) {
-                        HStack {
-                            Text(playlist.name)
-                            Spacer()
-                            switch playlist.sourcePlatform {
-                            case .appleMusic:
-                                Image("AM Logo")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
-                            case .spotify:
-                                Image("Spotify Logo")
-                                    .resizable()
-                                    .frame(width: 20, height: 20)
+            if userSettings == [] || userSettings[0].noServicesActive {
+                NoServicesView(currentTab: $currentTab)
+                .navigationTitle("Home")
+            }
+            else {
+                if playlists.isEmpty {
+                    Text("No playlists are added. Click the \(Image(systemName: "plus")) to import a playlist.")
+                        .font(.headline)
+                        .multilineTextAlignment(.center)
+                        .foregroundStyle(.secondary)
+                        .padding()
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarTrailing) {
+                                EditButton()
+                            }
+                            ToolbarItem {
+                                SourceMenuView(isPresentingSpotify: $isPresentingSpotify, isPresentingAppleMusic: $isPresentingAppleMusic, isPresentingYouTube: $isPresentingYouTube, currentTab: $currentTab)
                             }
                         }
+                        .navigationTitle("Home")
+                }
+                else {
+                    List {
+                        ForEach(playlists) { playlist in
+                            NavigationLink(value: playlist) {
+                                HStack {
+                                    Text(playlist.name)
+                                    Spacer()
+                                    switch playlist.sourcePlatform {
+                                    case .appleMusic:
+                                        Image("AM Logo")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                    case .spotify:
+                                        Image("Spotify Logo")
+                                            .resizable()
+                                            .frame(width: 20, height: 20)
+                                    }
+                                }
+                            }
+                        }
+                        .onDelete(perform: deleteItems)
                     }
+                    .navigationDestination(for: PlaylistData.self) { playlist in
+                        PlaylistDetailWithOptionsView(playlist: playlist, navPath: $navPath)
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            EditButton()
+                        }
+                        ToolbarItem {
+                            SourceMenuView(isPresentingSpotify: $isPresentingSpotify, isPresentingAppleMusic: $isPresentingAppleMusic, isPresentingYouTube: $isPresentingYouTube, currentTab: $currentTab)
+                        }
+                    }
+                    .navigationTitle("Home")
                 }
-                .onDelete(perform: deleteItems)
             }
-            .navigationDestination(for: PlaylistData.self) { playlist in
-                PlaylistDetailWithOptionsView(playlist: playlist, navPath: $navPath)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    SourceMenuView(isPresentingSpotify: $isPresentingSpotify, isPresentingAppleMusic: $isPresentingAppleMusic, currentTab: $currentTab)
-                }
-            }
-            .navigationTitle("Home")
         }
         .onAppear(perform: isFirstLaunch)
         .sheet(isPresented: $firstLaunch, content: {
