@@ -19,7 +19,9 @@ struct SongMatchPicker: View {
             List {
                 ForEach(searchResults) { result in
                     Button {
-                        selection = result
+                        withAnimation {
+                            selection = result
+                        }
                     } label: {
                         HStack {
                             SongRow(song: result)
@@ -38,25 +40,29 @@ struct SongMatchPicker: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        isPresented = false
+                        withAnimation {
+                            isPresented = false
+                        }
                     } label: {
                         Text("Cancel")
                     }
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        if selection != SongData.emptySong {
-                            song.name = selection.name
-                            song.artists = selection.artists
-                            song.albumName = selection.albumName
-                            song.albumArtists = selection.albumArtists
-                            song.isrc = selection.isrc
-                            song.amid = selection.amid
-                            song.spid = selection.spid
-                            song.coverImage = selection.coverImage
-                            song.matchState = .successful
+                        withAnimation {
+                            if selection != SongData.emptySong {
+                                song.name = selection.name
+                                song.artists = selection.artists
+                                song.albumName = selection.albumName
+                                song.albumArtists = selection.albumArtists
+                                song.isrc = selection.isrc
+                                song.amid = selection.amid
+                                song.spid = selection.spid
+                                song.coverImage = selection.coverImage
+                                song.matchState = .successful
+                            }
+                            isPresented = false
                         }
-                        isPresented = false
                     } label: {
                         Text("Done")
                     }

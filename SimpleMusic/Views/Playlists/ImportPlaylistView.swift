@@ -19,12 +19,14 @@ struct ImportPlaylistView: View {
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
-                        modelContext.insert(playlist)
-                        _ = navPath.popLast()
-                        isPresented = false
+                        withAnimation {
+                            modelContext.insert(playlist)
+                            _ = navPath.popLast()
+                            isPresented = false
+                        }
                     } label: {
                         Text("Add to App")
-                            .foregroundStyle(playlist.sourcePlatform == .spotify ? .green : .pink)
+                            .foregroundStyle(playlist.sourcePlatform == .spotify ? .green : playlist.sourcePlatform == .appleMusic ? .pink : .red)
                     }
                 }
             }

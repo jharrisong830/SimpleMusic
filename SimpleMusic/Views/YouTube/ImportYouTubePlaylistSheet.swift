@@ -1,15 +1,15 @@
 //
-//  ImportApplePlaylistSheet.swift
+//  ImportYouTubePlaylistSheet.swift
 //  SimpleMusic
 //
-//  Created by John Graham on 9/1/23.
+//  Created by John Graham on 10/4/23.
 //
 
 import SwiftUI
 import KeychainAccess
 import SwiftData
 
-struct ImportApplePlaylistSheet: View {
+struct ImportYouTubePlaylistSheet: View {
     @Environment(\.modelContext) private var modelContext
     
     @Binding var isPresented: Bool
@@ -23,7 +23,9 @@ struct ImportApplePlaylistSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        isPresented = false
+                        withAnimation {
+                            isPresented = false
+                        }
                     } label: {
                         Text("Cancel")
                     }
@@ -31,7 +33,10 @@ struct ImportApplePlaylistSheet: View {
             }
             .task {
                 do {
-                    newplaylists = try await AppleMusicClient.getPlaylists()
+                    if YouTubeClient.checkRefresh() {
+                        try await YouTubeClient.getRefreshToken()
+                    }
+                    newplaylists = try await YouTubeClient.getPlaylists()
                 } catch {
                     isPresented = false
                 }
@@ -40,6 +45,4 @@ struct ImportApplePlaylistSheet: View {
     }
 }
 
-//#Preview {
-//    ImportSpotifyPlaylistSheet(isPresented: .constant(true))
-//}
+

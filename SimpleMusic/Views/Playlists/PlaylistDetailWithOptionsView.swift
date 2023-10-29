@@ -51,6 +51,8 @@ struct PlaylistDetailWithOptionsView: View {
                         Image("Spotify Logo")
                             .resizable()
                             .frame(width: 20, height: 20)
+                    case .youTube:
+                        Image(systemName: "network")
                     }
                 }
                 HStack {
@@ -67,6 +69,8 @@ struct PlaylistDetailWithOptionsView: View {
                         Text(playlist.spid)
                             .foregroundStyle(.secondary)
                             .fontDesign(.monospaced)
+                    case .youTube:
+                        Image(systemName: "network")
                     }
                 }
                 HStack {
@@ -102,10 +106,14 @@ struct PlaylistDetailWithOptionsView: View {
                                 .foregroundStyle(.pink)
                         }
                     }
+                case .youTube:
+                    Image(systemName: "network")
                 }
                 Button {
-                    modelContext.delete(playlist)
-                    _ = navPath.popLast()
+                    withAnimation {
+                        modelContext.delete(playlist)
+                        _ = navPath.popLast()
+                    }
                 } label: {
                     Text("Remove")
                         .foregroundStyle(.red)
@@ -138,6 +146,15 @@ struct PlaylistDetailWithOptionsView: View {
                     songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.amid)
                 } catch {
                     print("error loading songs")
+                }
+            case .youTube:
+                do {
+                    if YouTubeClient.checkRefresh() {
+                        try await YouTubeClient.getRefreshToken()
+                    }
+                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
+                } catch {
+                    print("error loading vids")
                 }
             }
         }

@@ -41,6 +41,15 @@ struct PlaylistDetailView: View {
                 } catch {
                     print("error loading songs")
                 }
+            case .youTube:
+                do {
+                    if YouTubeClient.checkRefresh() {
+                        try await YouTubeClient.getRefreshToken()
+                    }
+                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
+                } catch {
+                    print("error loading vids")
+                }
             }
         }
     }

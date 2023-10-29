@@ -74,23 +74,27 @@ struct ConfirmTransferToAppleSheet: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button {
-                            isPresented = false
+                            withAnimation {
+                                isPresented = false
+                            }
                         } label: {
                             Text("Cancel")
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button {
-                            if matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 {
-                                presentIncompleteMatchAlert = true
-                            }
-                            else {
-                                Task {
-                                    let newPlaylistID = try await AppleMusicClient.createNewPlaylist(name: playlist.name, description: "")
-                                    print(newPlaylistID)
-                                    try await AppleMusicClient.addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
+                            withAnimation {
+                                if matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 {
+                                    presentIncompleteMatchAlert = true
                                 }
-                                isPresented = false
+                                else {
+                                    Task {
+                                        let newPlaylistID = try await AppleMusicClient.createNewPlaylist(name: playlist.name, description: "")
+                                        print(newPlaylistID)
+                                        try await AppleMusicClient.addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
+                                    }
+                                    isPresented = false
+                                }
                             }
                         } label: {
                             Text("Add")
@@ -100,19 +104,21 @@ struct ConfirmTransferToAppleSheet: View {
                 }
                 .alert("Incomplete Match", isPresented: $presentIncompleteMatchAlert) {
                     Button(role: .cancel) {
-                        
+                        withAnimation {}
                     } label: {
                         Text("No")
                     }
                     Button {
-                        Task {
-                            matchedSongs.removeAll(where: {$0.matchState != .successful})
-                            print(matchedSongs.count)
-                            let newPlaylistID = try await AppleMusicClient.createNewPlaylist(name: playlist.name, description: "")
-                            print(newPlaylistID)
-                            try await AppleMusicClient.addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
+                        withAnimation {
+                            Task {
+                                matchedSongs.removeAll(where: {$0.matchState != .successful})
+                                print(matchedSongs.count)
+                                let newPlaylistID = try await AppleMusicClient.createNewPlaylist(name: playlist.name, description: "")
+                                print(newPlaylistID)
+                                try await AppleMusicClient.addSongsToPlaylist(AMPlaylistID: newPlaylistID, songs: matchedSongs)
+                            }
+                            isPresented = false
                         }
-                        isPresented = false
                     } label: {
                         Text("Yes")
                     }
@@ -132,7 +138,9 @@ struct ConfirmTransferToAppleSheet: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button {
-                            isPresented = false
+                            withAnimation {
+                                isPresented = false
+                            }
                         } label: {
                             Text("Cancel")
                         }
@@ -140,6 +148,40 @@ struct ConfirmTransferToAppleSheet: View {
                 }
             }
         }
+//        .task { // trying concurrency
+//            do {
+//                let queue = DispatchQueue(label: "transfer", qos: .userInitiated, attributes: .concurrent)
+//                let mutex = DispatchSemaphore(value: 1)
+//                let oldSongs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
+//                var pool: [DispatchWorkItem] = []
+//                
+//                for song in oldSongs {
+//                    let item = DispatchWorkItem {
+//                        var newSong: SongData? = nil
+//                        Task {
+//                            newSong = try await AppleMusicClient.getSingleSongMatch(song: song)
+//                        }
+//                        guard let s = newSong else {
+//                            return
+//                        }
+//                        mutex.wait()
+//                        matchedSongs.append(s)
+//                        mutex.signal()
+//                    }
+//                    pool.append(item)
+//                    print("thread for \(song.name) submitted to the pool")
+//                    queue.async(execute: item)
+//                }
+//                
+//                for t in pool {
+//                    t.wait()
+//                }
+//                print("finished matching all songs!")
+//                isMatchComplete = true
+//            } catch {
+//                print("error matching songs")
+//            }
+//        }
         .task {
             do {
                 matchedSongs = try await AppleMusicClient.getSongMatches(playlist: playlist)

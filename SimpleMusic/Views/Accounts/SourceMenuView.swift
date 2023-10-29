@@ -21,7 +21,9 @@ struct SourceMenuView: View {
         Menu {
             if userSettings == [] || (userSettings[0].noServicesActive && (MusicAuthorization.currentStatus != .authorized)) {
                 Button {
-                    currentTab = .accounts
+                    withAnimation {
+                        currentTab = .accounts
+                    }
                 } label: {
                     Label("Add services in Accounts.", systemImage: "xmark.circle.fill")
                 }
@@ -29,21 +31,27 @@ struct SourceMenuView: View {
             else {
                 if userSettings[0].spotifyActive {
                     Button {
-                        isPresentingSpotify = true
+                        withAnimation {
+                            isPresentingSpotify = true
+                        }
                     } label: {
                         Label("From Spotify", image: "Spotify Logo")
                     }
                 }
                 if MusicAuthorization.currentStatus == .authorized {
                     Button {
-                        isPresentingAppleMusic = true
+                        withAnimation {
+                            isPresentingAppleMusic = true
+                        }
                     } label: {
                         Label("From Apple Music", image: "AM Logo")
                     }
                 }
                 if userSettings[0].youtubeActive ?? false {
                     Button {
-                        isPresentingYouTube = true
+                        withAnimation {
+                            isPresentingYouTube = true
+                        }
                     } label: {
                         Label("From YouTube", systemImage: "network")
                     }

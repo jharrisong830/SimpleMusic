@@ -44,16 +44,18 @@ struct WelcomeSheet: View {
                 WelcomeDetailRow(iconName: detail.iconName, title: detail.title, description: detail.description)
             }
             Spacer()
-            Button(action: {
-                modelContext.insert(UserSettings())
-//                let userDefaults = UserDefaults.standard
-//                userDefaults.set(1, forKey: "simpleMusic_firstLaunch")
-                keychain["access_token"] = nil
-                keychain["refresh_token"] = nil
-                firstLaunch = false
-            }, label: {
+            Button {
+                withAnimation {
+                    modelContext.insert(UserSettings())
+    //                let userDefaults = UserDefaults.standard
+    //                userDefaults.set(1, forKey: "simpleMusic_firstLaunch")
+                    keychain["access_token"] = nil
+                    keychain["refresh_token"] = nil
+                    firstLaunch = false
+                }
+            } label: {
                 Text("Let's go!")
-            })
+            }
             .buttonStyle(ProminentButtonStyle())
             Spacer()
         }

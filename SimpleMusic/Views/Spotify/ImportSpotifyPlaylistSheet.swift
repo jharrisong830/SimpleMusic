@@ -22,7 +22,9 @@ struct ImportSpotifyPlaylistSheet: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button {
-                        isPresented = false
+                        withAnimation {
+                            isPresented = false
+                        }
                     } label: {
                         Text("Cancel")
                     }

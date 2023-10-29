@@ -28,9 +28,9 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack(path: $navPath) {
-            if userSettings == [] || userSettings[0].noServicesActive {
+            if userSettings == [] || (userSettings[0].noServicesActive && (MusicAuthorization.currentStatus != .authorized)) {
                 NoServicesView(currentTab: $currentTab)
-                .navigationTitle("Home")
+                .navigationTitle("Playlists")
             }
             else {
                 if playlists.isEmpty {
@@ -47,7 +47,7 @@ struct ContentView: View {
                                 SourceMenuView(isPresentingSpotify: $isPresentingSpotify, isPresentingAppleMusic: $isPresentingAppleMusic, isPresentingYouTube: $isPresentingYouTube, currentTab: $currentTab)
                             }
                         }
-                        .navigationTitle("Home")
+                        .navigationTitle("Playlists")
                 }
                 else {
                     List {
@@ -65,9 +65,12 @@ struct ContentView: View {
                                         Image("Spotify Logo")
                                             .resizable()
                                             .frame(width: 20, height: 20)
+                                    case .youTube:
+                                        Image(systemName: "network")
                                     }
                                 }
                             }
+                            .disabled(!userSettings[0].spotifyActive)
                         }
                         .onDelete(perform: deleteItems)
                     }
@@ -82,7 +85,7 @@ struct ContentView: View {
                             SourceMenuView(isPresentingSpotify: $isPresentingSpotify, isPresentingAppleMusic: $isPresentingAppleMusic, isPresentingYouTube: $isPresentingYouTube, currentTab: $currentTab)
                         }
                     }
-                    .navigationTitle("Home")
+                    .navigationTitle("Playlists")
                 }
             }
         }
@@ -95,6 +98,9 @@ struct ContentView: View {
         })
         .sheet(isPresented: $isPresentingAppleMusic, content: {
             ImportApplePlaylistSheet(isPresented: $isPresentingAppleMusic)
+        })
+        .sheet(isPresented: $isPresentingYouTube, content: {
+            ImportYouTubePlaylistSheet(isPresented: $isPresentingYouTube)
         })
     }
 

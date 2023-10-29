@@ -74,23 +74,27 @@ struct ConfirmTransferToSpotifySheet: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button {
-                            isPresented = false
+                            withAnimation {
+                                isPresented = false
+                            }
                         } label: {
                             Text("Cancel")
                         }
                     }
                     ToolbarItem(placement: .confirmationAction) {
                         Button {
-                            if matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 {
-                                presentIncompleteMatchAlert = true
-                            }
-                            else {
-                                Task {
-                                    let newPlaylistID = try await SpotifyClient.createNewPlaylist(name: playlist.name, description: "")
-                                    print(newPlaylistID)
-                                    try await SpotifyClient.addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                            withAnimation {
+                                if matchedSongs.reduce(0, {$1.matchState != .successful ? $0+1 : $0}) != 0 {
+                                    presentIncompleteMatchAlert = true
                                 }
-                                isPresented = false
+                                else {
+                                    Task {
+                                        let newPlaylistID = try await SpotifyClient.createNewPlaylist(name: playlist.name, description: "")
+                                        print(newPlaylistID)
+                                        try await SpotifyClient.addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                                    }
+                                    isPresented = false
+                                }
                             }
                         } label: {
                             Text("Add")
@@ -100,19 +104,21 @@ struct ConfirmTransferToSpotifySheet: View {
                 }
                 .alert("Incomplete Match", isPresented: $presentIncompleteMatchAlert) {
                     Button(role: .cancel) {
-                        
+                        withAnimation {}
                     } label: {
                         Text("No")
                     }
                     Button {
-                        Task {
-                            matchedSongs.removeAll(where: {$0.matchState != .successful})
-                            print(matchedSongs.count)
-                            let newPlaylistID = try await SpotifyClient.createNewPlaylist(name: playlist.name, description: "")
-                            print(newPlaylistID)
-                            try await SpotifyClient.addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                        withAnimation {
+                            Task {
+                                matchedSongs.removeAll(where: {$0.matchState != .successful})
+                                print(matchedSongs.count)
+                                let newPlaylistID = try await SpotifyClient.createNewPlaylist(name: playlist.name, description: "")
+                                print(newPlaylistID)
+                                try await SpotifyClient.addSongsToPlaylist(spotifyPlaylistID: newPlaylistID, songs: matchedSongs)
+                            }
+                            isPresented = false
                         }
-                        isPresented = false
                     } label: {
                         Text("Yes")
                     }
@@ -132,7 +138,9 @@ struct ConfirmTransferToSpotifySheet: View {
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button {
-                            isPresented = false
+                            withAnimation {
+                                isPresented = false
+                            }
                         } label: {
                             Text("Cancel")
                         }

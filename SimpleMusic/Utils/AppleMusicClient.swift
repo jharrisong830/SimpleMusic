@@ -44,6 +44,37 @@ class AppleMusicClient {
         return songs
     }
     
+    
+    
+    static func getSingleSongMatch(song: SongData) async throws -> SongData {
+        let musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/catalog/us/songs?filter[isrc]=\(song.isrc)")!)
+        let musicReq = MusicDataRequest(urlRequest: musicURL)
+        let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
+        if !jsonData.contains(where: {$0.key == "data"}) {
+            print("Nothing found for \(song.name), skipping...")
+        }
+        else {
+            let songDataArray = (jsonData["data"] as! [JSONObject])
+            if songDataArray.isEmpty {
+                print("Nothing found for \(song.name), skipping...")
+                song.matchState = .failed
+            }
+            else {
+                let songData = songDataArray[0]
+                let albumMatchID = parseAlbums(amDataResponse: songDataArray, originalSong: song)
+                song.amid = albumMatchID ?? songData["id"] as! String
+                print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
+                let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.amid))
+                let amSong = try await amSongReq.response()
+                song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)!.absoluteString
+                song.matchState = .successful
+            }
+        }
+        return song
+    }
+    
+    
+    
     static func parseAlbums(amDataResponse: [JSONObject], originalSong: SongData) -> String? {
         for song in amDataResponse {
             let data = song["attributes"] as! JSONObject
@@ -87,7 +118,7 @@ class AppleMusicClient {
         
         var allPlaylists: [PlaylistData] = []
         allPlaylists.append(contentsOf: (jsonData["data"] as! [JSONObject]).map {
-            PlaylistData(name: ($0["attributes"] as! JSONObject)["name"] as! String, amid: $0["id"] as! String, spid: "", coverImage: "", sourcePlatform: .appleMusic)
+            PlaylistData(name: ($0["attributes"] as! JSONObject)["name"] as! String, amid: $0["id"] as! String, spid: "", ytid: nil, coverImage: "", sourcePlatform: .appleMusic)
         })
         return allPlaylists
     }
@@ -113,6 +144,7 @@ class AppleMusicClient {
                                      isrc: resourceResponse.isrc!,
                                      amid: resourceResponse.id.rawValue,
                                      spid: "",
+                                     ytid: nil,
                                      coverImage: resourceResponse.artwork!.url(width: 300, height: 300)!.absoluteString
             ))
         }

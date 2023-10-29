@@ -18,7 +18,7 @@ extension HTTPField.Name {
 
 
 class SpotifyClient {
-    static private let spClient = "6dd07b58beda42a796654e331dcd99bd"
+    static private let spClient = "b765bea9e3884e28819eeb4d950453a7"
     static private let redirect = "simple-music://"
     
     
@@ -50,9 +50,10 @@ class SpotifyClient {
     
     static func checkRefresh() -> Bool {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
-        guard let expiryTime = Double(keychain["sp_access_expiration"]!) else {
+        guard let expiryTimeString = keychain["sp_access_expiration"] else {
             return true
         }
+        let expiryTime = Double(expiryTimeString)!
         return Date.now.timeIntervalSince1970 > expiryTime // returns true if key needs to be refreshed, false if okay
     }
     
@@ -113,7 +114,7 @@ class SpotifyClient {
             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             
             allPlaylists.append(contentsOf: (jsonData["items"] as! [JSONObject]).map {
-                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String, sourcePlatform: .spotify)
+                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, ytid: nil, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String, sourcePlatform: .spotify)
             })
             playlistURL = jsonData["next"] as? String
         } while playlistURL != nil
@@ -151,6 +152,7 @@ class SpotifyClient {
                          isrc: (($0["track"] as! JSONObject)["external_ids"] as! JSONObject)["isrc"] as! String,
                          amid: "",
                          spid: ($0["track"] as! JSONObject)["id"] as! String,
+                         ytid: nil,
                          coverImage: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String)
             })
             songURL = jsonData["next"] as? String
@@ -204,6 +206,7 @@ class SpotifyClient {
                      isrc: ($0["external_ids"] as! JSONObject)["isrc"] as! String,
                      amid: "",
                      spid: $0["id"] as! String,
+                     ytid: nil,
                      coverImage: (($0["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String)
         }
     }

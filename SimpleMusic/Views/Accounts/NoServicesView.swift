@@ -18,7 +18,9 @@ struct NoServicesView: View {
                 .foregroundStyle(.secondary)
                 .padding()
             Button {
-                currentTab = .accounts
+                withAnimation {
+                    currentTab = .accounts
+                }
             } label: {
                 Label("Go to Accounts", systemImage: "person.2.fill")
             }
