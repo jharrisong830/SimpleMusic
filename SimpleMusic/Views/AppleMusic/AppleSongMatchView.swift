@@ -37,7 +37,7 @@ struct AppleSongMatchView: View {
                     HStack {
                         Text("Apple Music ID")
                         Spacer()
-                        Text(song.amid)
+                        Text(song.platformID)
                             .foregroundStyle(.secondary)
                             .fontDesign(.monospaced)
                     }
@@ -51,7 +51,7 @@ struct AppleSongMatchView: View {
                                 searchResults = []
                                 let catalogResults = try await catalogSearch.response().songs
                                 for amSong in catalogResults {
-                                    searchResults.append(SongData(name: amSong.title, artists: [amSong.artistName], albumName: amSong.albumTitle ?? "", albumArtists: [amSong.artistName], isrc: amSong.isrc ?? "", amid: amSong.id.rawValue, spid: "", ytid: nil, coverImage: amSong.artwork?.url(width: 300, height: 300)!.absoluteString))
+                                    searchResults.append(SongData(name: amSong.title, artists: [amSong.artistName], albumName: amSong.albumTitle ?? "", albumArtists: [amSong.artistName], isrc: amSong.isrc ?? "", platform: .appleMusic, platformID: amSong.id.rawValue, platformURL: nil, coverImage: amSong.artwork?.url(width: 300, height: 300)))
                                 }
                                 isPresented = true
                                 searchText = ""

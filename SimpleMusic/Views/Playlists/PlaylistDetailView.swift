@@ -25,31 +25,33 @@ struct PlaylistDetailView: View {
         }
         .navigationTitle(playlist.name)
         .task {
-            switch playlist.sourcePlatform {
+            switch playlist.platform {
             case .spotify:
                 do {
                     if SpotifyClient.checkRefresh() {
                         try await SpotifyClient.getRefreshToken()
                     }
-                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
+                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.platformID)
                 } catch {
                     print("error loading songs")
                 }
             case .appleMusic:
                 do {
-                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.amid)
+                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.platformID)
                 } catch {
                     print("error loading songs")
                 }
-            case .youTube:
-                do {
-                    if YouTubeClient.checkRefresh() {
-                        try await YouTubeClient.getRefreshToken()
-                    }
-                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
-                } catch {
-                    print("error loading vids")
-                }
+            default:
+                songs = []
+//            case .youTube:
+//                do {
+//                    if YouTubeClient.checkRefresh() {
+//                        try await YouTubeClient.getRefreshToken()
+//                    }
+//                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
+//                } catch {
+//                    print("error loading vids")
+//                }
             }
         }
     }

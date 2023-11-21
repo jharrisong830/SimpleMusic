@@ -114,7 +114,8 @@ class SpotifyClient {
             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             
             allPlaylists.append(contentsOf: (jsonData["items"] as! [JSONObject]).map {
-                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, ytid: nil, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String, sourcePlatform: .spotify)
+//                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, ytid: nil, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String, sourcePlatform: .spotify)
+                PlaylistData(name: $0["name"] as! String, platform: .spotify, platformID: $0["id"] as! String, platformURL: URL(string: ($0["external_urls"] as! JSONObject)["spotify"] as! String), coverImage: URL(string: ($0["images"] as! [JSONObject])[0]["url"] as! String))
             })
             playlistURL = jsonData["next"] as? String
         } while playlistURL != nil
@@ -150,10 +151,10 @@ class SpotifyClient {
                          albumName: (($0["track"] as! JSONObject)["album"] as! JSONObject)["name"] as! String,
                          albumArtists: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
                          isrc: (($0["track"] as! JSONObject)["external_ids"] as! JSONObject)["isrc"] as! String,
-                         amid: "",
-                         spid: ($0["track"] as! JSONObject)["id"] as! String,
-                         ytid: nil,
-                         coverImage: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String)
+                         platform: .spotify,
+                         platformID: ($0["track"] as! JSONObject)["id"] as! String,
+                         platformURL: URL(string: (($0["track"] as! JSONObject)["external_urls"] as! JSONObject)["spotify"] as! String),
+                         coverImage: URL(string: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String))
             })
             songURL = jsonData["next"] as? String
         } while songURL != nil
@@ -166,7 +167,7 @@ class SpotifyClient {
     static func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
-        let songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.amid)
+        let songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.platformID)
         
         for song in songs {
             var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=isrc:\(song.isrc)&type=track")!)
@@ -175,8 +176,9 @@ class SpotifyClient {
             let (data, _) = try await URLSession.shared.data(for: searchRequest)
             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             if (jsonData["tracks"] as! JSONObject)["total"] as! Int != 0 {
-                song.spid = ((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["id"] as! String
-                song.coverImage = ((((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String
+                song.platformID = ((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["id"] as! String
+                song.platformURL = URL(string: (((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["external_urls"] as! JSONObject)["spotify"] as! String)
+                song.coverImage = URL(string: ((((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String)
                 song.matchState = .successful
             }
             else {
@@ -204,10 +206,10 @@ class SpotifyClient {
                      albumName: ($0["album"] as! JSONObject)["name"] as! String,
                      albumArtists: (($0["album"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
                      isrc: ($0["external_ids"] as! JSONObject)["isrc"] as! String,
-                     amid: "",
-                     spid: $0["id"] as! String,
-                     ytid: nil,
-                     coverImage: (($0["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as? String)
+                     platform: .spotify,
+                     platformID: $0["id"] as! String,
+                     platformURL: URL(string: ($0["external_urls"] as! JSONObject)["spotify"] as! String),
+                     coverImage: URL(string: (($0["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String))
         }
     }
     
@@ -232,7 +234,7 @@ class SpotifyClient {
     
     static func addSongsToPlaylist(spotifyPlaylistID: String, songs: [SongData]) async throws {
         let URIBody: [String: Any] = [
-            "uris": songs.map({"spotify:track:\($0.spid)"}),
+            "uris": songs.map({"spotify:track:\($0.platformID)"}),
             "position": 0
         ]
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")

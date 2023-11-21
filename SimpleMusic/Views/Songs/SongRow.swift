@@ -12,7 +12,7 @@ struct SongRow: View {
     
     var body: some View {
         HStack {
-            AsyncImage(url: URL(string: song.coverImage!)) { image in
+            AsyncImage(url: song.coverImage!) { image in
                 image.resizable()
                     .frame(width: 37.5, height: 37.5)
                     .clipShape(RoundedRectangle(cornerRadius: 2.5))

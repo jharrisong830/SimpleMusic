@@ -56,8 +56,9 @@ struct SongMatchPicker: View {
                                 song.albumName = selection.albumName
                                 song.albumArtists = selection.albumArtists
                                 song.isrc = selection.isrc
-                                song.amid = selection.amid
-                                song.spid = selection.spid
+                                song.platform = selection.platform
+                                song.platformID = selection.platformID
+                                song.platformURL = selection.platformURL
                                 song.coverImage = selection.coverImage
                                 song.matchState = .successful
                             }

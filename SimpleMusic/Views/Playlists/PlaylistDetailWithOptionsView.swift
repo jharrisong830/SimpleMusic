@@ -42,7 +42,7 @@ struct PlaylistDetailWithOptionsView: View {
                 HStack {
                     Text("Platform")
                     Spacer()
-                    switch playlist.sourcePlatform {
+                    switch playlist.platform {
                     case .appleMusic:
                         Image("AM Logo")
                             .resizable()
@@ -51,25 +51,25 @@ struct PlaylistDetailWithOptionsView: View {
                         Image("Spotify Logo")
                             .resizable()
                             .frame(width: 20, height: 20)
-                    case .youTube:
+                    default:
                         Image(systemName: "network")
                     }
                 }
                 HStack {
-                    switch playlist.sourcePlatform {
+                    switch playlist.platform {
                     case .appleMusic:
                         Text("Apple Music ID")
                         Spacer()
-                        Text(playlist.amid)
+                        Text(playlist.platformID)
                             .foregroundStyle(.secondary)
                             .fontDesign(.monospaced)
                     case .spotify:
                         Text("Spotify ID")
                         Spacer()
-                        Text(playlist.spid)
+                        Text(playlist.platformID)
                             .foregroundStyle(.secondary)
                             .fontDesign(.monospaced)
-                    case .youTube:
+                    default:
                         Image(systemName: "network")
                     }
                 }
@@ -83,7 +83,7 @@ struct PlaylistDetailWithOptionsView: View {
                 Text("Details")
             }
             Section {
-                switch playlist.sourcePlatform {
+                switch playlist.platform {
                 case.appleMusic:
                     if userSettings[0].spotifyActive {
                         Button {
@@ -106,7 +106,7 @@ struct PlaylistDetailWithOptionsView: View {
                                 .foregroundStyle(.pink)
                         }
                     }
-                case .youTube:
+                default:
                     Image(systemName: "network")
                 }
                 Button {
@@ -131,31 +131,33 @@ struct PlaylistDetailWithOptionsView: View {
         }
         .navigationTitle(playlist.name)
         .task {
-            switch playlist.sourcePlatform {
+            switch playlist.platform {
             case .spotify:
                 do {
                     if SpotifyClient.checkRefresh() {
                         try await SpotifyClient.getRefreshToken()
                     }
-                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
+                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.platformID)
                 } catch {
                     print("error loading songs")
                 }
             case .appleMusic:
                 do {
-                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.amid)
+                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.platformID)
                 } catch {
                     print("error loading songs")
                 }
-            case .youTube:
-                do {
-                    if YouTubeClient.checkRefresh() {
-                        try await YouTubeClient.getRefreshToken()
-                    }
-                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
-                } catch {
-                    print("error loading vids")
-                }
+            default:
+                songs = []
+//            case .youTube:
+//                do {
+//                    if YouTubeClient.checkRefresh() {
+//                        try await YouTubeClient.getRefreshToken()
+//                    }
+//                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
+//                } catch {
+//                    print("error loading vids")
+//                }
             }
         }
         .sheet(isPresented: $isTransferingToApple) {

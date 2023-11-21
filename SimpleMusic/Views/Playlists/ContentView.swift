@@ -56,7 +56,7 @@ struct ContentView: View {
                                 HStack {
                                     Text(playlist.name)
                                     Spacer()
-                                    switch playlist.sourcePlatform {
+                                    switch playlist.platform {
                                     case .appleMusic:
                                         Image("AM Logo")
                                             .resizable()
@@ -65,7 +65,7 @@ struct ContentView: View {
                                         Image("Spotify Logo")
                                             .resizable()
                                             .frame(width: 20, height: 20)
-                                    case .youTube:
+                                    default:
                                         Image(systemName: "network")
                                     }
                                 }
@@ -99,9 +99,9 @@ struct ContentView: View {
         .sheet(isPresented: $isPresentingAppleMusic, content: {
             ImportApplePlaylistSheet(isPresented: $isPresentingAppleMusic)
         })
-        .sheet(isPresented: $isPresentingYouTube, content: {
-            ImportYouTubePlaylistSheet(isPresented: $isPresentingYouTube)
-        })
+//        .sheet(isPresented: $isPresentingYouTube, content: {
+//            ImportYouTubePlaylistSheet(isPresented: $isPresentingYouTube)
+//        })
     }
 
 

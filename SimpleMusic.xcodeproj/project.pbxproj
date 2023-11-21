@@ -19,6 +19,7 @@
 		A94FA6922A8EA24600ADCB22 /* SongMatchPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = A94FA6912A8EA24600ADCB22 /* SongMatchPicker.swift */; };
 		A998F8C12A85563600D33EDA /* PlaylistDetailWithOptionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A998F8C02A85563600D33EDA /* PlaylistDetailWithOptionsView.swift */; };
 		A9AFEA7B2ACDAEDE007E16C0 /* ImportYouTubePlaylistSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9AFEA7A2ACDAEDE007E16C0 /* ImportYouTubePlaylistSheet.swift */; };
+		A9B621E22AEEBC7E00E90729 /* SongDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9B621E12AEEBC7E00E90729 /* SongDetailView.swift */; };
 		A9BB169F2A732A84002BCCFD /* WelcomeSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BB169E2A732A84002BCCFD /* WelcomeSheet.swift */; };
 		A9BB16A12A733133002BCCFD /* ProminentButtonStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BB16A02A733133002BCCFD /* ProminentButtonStyle.swift */; };
 		A9BB16A32A7336C8002BCCFD /* WelcomeDetailRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A9BB16A22A7336C8002BCCFD /* WelcomeDetailRow.swift */; };
@@ -56,6 +57,7 @@
 		A94FA6912A8EA24600ADCB22 /* SongMatchPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongMatchPicker.swift; sourceTree = "<group>"; };
 		A998F8C02A85563600D33EDA /* PlaylistDetailWithOptionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistDetailWithOptionsView.swift; sourceTree = "<group>"; };
 		A9AFEA7A2ACDAEDE007E16C0 /* ImportYouTubePlaylistSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportYouTubePlaylistSheet.swift; sourceTree = "<group>"; };
+		A9B621E12AEEBC7E00E90729 /* SongDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SongDetailView.swift; sourceTree = "<group>"; };
 		A9BB169D2A730DB5002BCCFD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = SimpleMusic/Info.plist; sourceTree = SOURCE_ROOT; };
 		A9BB169E2A732A84002BCCFD /* WelcomeSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeSheet.swift; sourceTree = "<group>"; };
 		A9BB16A02A733133002BCCFD /* ProminentButtonStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProminentButtonStyle.swift; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 			children = (
 				A94FA6912A8EA24600ADCB22 /* SongMatchPicker.swift */,
 				A9D26CF42A84753900D2C609 /* SongRow.swift */,
+				A9B621E12AEEBC7E00E90729 /* SongDetailView.swift */,
 			);
 			path = Songs;
 			sourceTree = "<group>";
@@ -337,6 +340,7 @@
 				A9E1399D2A7C35A2007F2576 /* ImportSpotifyPlaylistSheet.swift in Sources */,
 				A9134E062A73EA8B00968834 /* AccountsView.swift in Sources */,
 				A9F3EAF52AA2CC9D003552D3 /* ImportApplePlaylistSheet.swift in Sources */,
+				A9B621E22AEEBC7E00E90729 /* SongDetailView.swift in Sources */,
 				A9BB16A12A733133002BCCFD /* ProminentButtonStyle.swift in Sources */,
 				A9181A732A7C5C90007E3AF2 /* SpotifyClient.swift in Sources */,
 				A9FB14E72AA3BCAB0098306C /* UserSettings.swift in Sources */,

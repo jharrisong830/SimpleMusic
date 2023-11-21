@@ -36,7 +36,7 @@ struct SpotifySongMatchView: View {
                     HStack {
                         Text("Spotify ID")
                         Spacer()
-                        Text(song.spid)
+                        Text(song.platformID)
                             .foregroundStyle(.secondary)
                             .fontDesign(.monospaced)
                     }

@@ -26,7 +26,7 @@ struct ImportPlaylistView: View {
                         }
                     } label: {
                         Text("Add to App")
-                            .foregroundStyle(playlist.sourcePlatform == .spotify ? .green : playlist.sourcePlatform == .appleMusic ? .pink : .red)
+                            .foregroundStyle(playlist.platform == .spotify ? .green : playlist.platform == .appleMusic ? .pink : .red)
                     }
                 }
             }

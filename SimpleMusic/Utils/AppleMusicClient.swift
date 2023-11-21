@@ -11,7 +11,7 @@ import MusicKit
 
 class AppleMusicClient {
     static func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
-        let songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
+        let songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.platformID)
         let total = songs.count
         var matches = 0
         for song in songs {
@@ -30,11 +30,12 @@ class AppleMusicClient {
                 else {
                     let songData = songDataArray[0]
                     let albumMatchID = parseAlbums(amDataResponse: songDataArray, originalSong: song)
-                    song.amid = albumMatchID ?? songData["id"] as! String
+                    song.platformID = albumMatchID ?? songData["id"] as! String
+                    song.platform = .appleMusic
                     print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
-                    let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.amid))
+                    let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.platformID))
                     let amSong = try await amSongReq.response()
-                    song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)!.absoluteString
+                    song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)
                     matches += 1
                     song.matchState = .successful
                 }
@@ -62,11 +63,12 @@ class AppleMusicClient {
             else {
                 let songData = songDataArray[0]
                 let albumMatchID = parseAlbums(amDataResponse: songDataArray, originalSong: song)
-                song.amid = albumMatchID ?? songData["id"] as! String
+                song.platformID = albumMatchID ?? songData["id"] as! String
+                song.platform = .appleMusic
                 print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
-                let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.amid))
+                let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.platformID))
                 let amSong = try await amSongReq.response()
-                song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)!.absoluteString
+                song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)
                 song.matchState = .successful
             }
         }
@@ -101,7 +103,7 @@ class AppleMusicClient {
     }
     
     static func addSongsToPlaylist(AMPlaylistID: String, songs: [SongData]) async throws {
-        let reqSongData = ["data": songs.map({["id": $0.amid, "type": "songs"]})]
+        let reqSongData = ["data": songs.map({["id": $0.platformID, "type": "songs"]})]
         var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(AMPlaylistID)/tracks")!)
         musicURL.httpMethod = "POST"
         musicURL.httpBody = try JSONSerialization.data(withJSONObject: reqSongData)
@@ -118,7 +120,11 @@ class AppleMusicClient {
         
         var allPlaylists: [PlaylistData] = []
         allPlaylists.append(contentsOf: (jsonData["data"] as! [JSONObject]).map {
-            PlaylistData(name: ($0["attributes"] as! JSONObject)["name"] as! String, amid: $0["id"] as! String, spid: "", ytid: nil, coverImage: "", sourcePlatform: .appleMusic)
+            PlaylistData(name: ($0["attributes"] as! JSONObject)["name"] as! String, 
+                         platform: .appleMusic,
+                         platformID: $0["id"] as! String,
+                         platformURL: nil,
+                         coverImage: nil)
         })
         return allPlaylists
     }
@@ -142,10 +148,10 @@ class AppleMusicClient {
                                      albumName: resourceResponse.albumTitle!,
                                      albumArtists: [resourceResponse.artistName],
                                      isrc: resourceResponse.isrc!,
-                                     amid: resourceResponse.id.rawValue,
-                                     spid: "",
-                                     ytid: nil,
-                                     coverImage: resourceResponse.artwork!.url(width: 300, height: 300)!.absoluteString
+                                     platform: .appleMusic,
+                                     platformID: resourceResponse.id.rawValue,
+                                     platformURL: nil,
+                                     coverImage: resourceResponse.artwork!.url(width: 300, height: 300)
             ))
         }
         return allSongs

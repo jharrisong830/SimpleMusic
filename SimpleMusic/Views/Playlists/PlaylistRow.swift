@@ -12,7 +12,7 @@ struct PlaylistRow: View {
     
     var body: some View {
         HStack {
-            AsyncImage(url: URL(string: playlist.coverImage!)) { image in
+            AsyncImage(url: playlist.coverImage!) { image in
                 image.resizable()
                     .frame(width: 64, height: 64)
                     .clipShape(RoundedRectangle(cornerRadius: 5))
@@ -20,7 +20,7 @@ struct PlaylistRow: View {
                 RoundedRectangle(cornerRadius: 5)
                     .frame(width: 64, height: 64)
                     .foregroundStyle(.gray)
-                    .overlay(content: {Image(systemName: "questionmark.app.dashed").foregroundStyle(playlist.sourcePlatform == .spotify ? .green : .pink)})
+                    .overlay(content: {Image(systemName: "questionmark.app.dashed").foregroundStyle(playlist.platform == .spotify ? .green : .pink)})
             }
             Text(playlist.name)
         }
