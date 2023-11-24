@@ -57,6 +57,16 @@ typealias SongData = SongDataSchemaRevV1.SongData
 
 extension SongData {
     static let emptySong = SongData(name: "", artists: [], albumName: "", albumArtists: [], isrc: "", platform: .none, platformID: "", platformURL: nil, coverImage: nil, matchState: .notDetermined)
+    
+    static let nilSong = SongData(name: "Unknown Song", artists: [], albumName: "", albumArtists: [], isrc: "", platform: .none, platformID: "", platformURL: nil, coverImage: nil, matchState: .failed)
+}
+
+
+struct SampleSongs { // sample data for SwiftData container
+    static let sampleSongs = [
+        SongData(name: "Death of a Bachelor", artists: ["Panic! At the Disco"], albumName: "Death of a Bachelor", albumArtists: ["Panic! at the Disco"], isrc: "12345", platform: .appleMusic, platformID: "appleMusic-1", platformURL: nil, coverImage: nil),
+        SongData(name: "MESS U MADE", artists: ["MICHELLE"], albumName: "AFTER DINNER WE TALK DREAMS", albumArtists: ["MICHELLE"], isrc: "67890", platform: .spotify, platformID: "spotify-1", platformURL: nil, coverImage: nil)
+    ]
 }
 
 

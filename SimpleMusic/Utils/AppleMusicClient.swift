@@ -138,21 +138,33 @@ class AppleMusicClient {
         let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
         
         let allIDs = (jsonData["data"] as! [JSONObject]).map {
-            (($0["attributes"] as! JSONObject)["playParams"] as! JSONObject)["catalogId"] as! String
+            let attr = $0["attributes"] as! JSONObject
+            if attr.keys.contains("playParams") {
+                return (attr["playParams"] as! JSONObject)["catalogId"] as! String
+            }
+            else {
+                return ""
+            }
+            // (($0["attributes"] as! JSONObject)["playParams"] as! JSONObject)["catalogId"] as! String
         }
         for id in allIDs {
-            let resourceReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(id))
-            let resourceResponse = try await resourceReq.response().items[0]
-            allSongs.append(SongData(name: resourceResponse.title,
-                                     artists: [resourceResponse.artistName],
-                                     albumName: resourceResponse.albumTitle!,
-                                     albumArtists: [resourceResponse.artistName],
-                                     isrc: resourceResponse.isrc!,
-                                     platform: .appleMusic,
-                                     platformID: resourceResponse.id.rawValue,
-                                     platformURL: nil,
-                                     coverImage: resourceResponse.artwork!.url(width: 300, height: 300)
-            ))
+            if id.isEmpty {
+                allSongs.append(SongData.nilSong)
+            }
+            else {
+                let resourceReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(id))
+                let resourceResponse = try await resourceReq.response().items[0]
+                allSongs.append(SongData(name: resourceResponse.title,
+                                         artists: [resourceResponse.artistName],
+                                         albumName: resourceResponse.albumTitle!,
+                                         albumArtists: [resourceResponse.artistName],
+                                         isrc: resourceResponse.isrc!,
+                                         platform: .appleMusic,
+                                         platformID: resourceResponse.id.rawValue,
+                                         platformURL: nil,
+                                         coverImage: resourceResponse.artwork!.url(width: 300, height: 300)
+                                        ))
+            }
         }
         return allSongs
     }

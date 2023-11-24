@@ -11,6 +11,7 @@ import SwiftData
 
 struct PlaylistDetailWithOptionsView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.openURL) private var openURL
     
     @Query private var userSettings: [UserSettings]
     
@@ -22,112 +23,12 @@ struct PlaylistDetailWithOptionsView: View {
     @State private var isTransferingToSpotify = false
     
     var body: some View {
-//        List {
-//            Section {
-//                ForEach(songs) { song in
-//                    SongRow(song: song)
-//                }
-//            } header: {
-//                Text("Songs")
-//            }
-//        }
         List {
-            Section {
-                HStack {
-                    Text("Name")
-                    Spacer()
-                    Text(playlist.name)
-                        .foregroundStyle(.secondary)
-                }
-                HStack {
-                    Text("Platform")
-                    Spacer()
-                    switch playlist.platform {
-                    case .appleMusic:
-                        Image("AM Logo")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                    case .spotify:
-                        Image("Spotify Logo")
-                            .resizable()
-                            .frame(width: 20, height: 20)
-                    default:
-                        Image(systemName: "network")
-                    }
-                }
-                HStack {
-                    switch playlist.platform {
-                    case .appleMusic:
-                        Text("Apple Music ID")
-                        Spacer()
-                        Text(playlist.platformID)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.monospaced)
-                    case .spotify:
-                        Text("Spotify ID")
-                        Spacer()
-                        Text(playlist.platformID)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.monospaced)
-                    default:
-                        Image(systemName: "network")
-                    }
-                }
-                HStack {
-                    Text("Total Songs")
-                    Spacer()
-                    Text("\(songs.count)")
-                        .foregroundStyle(.secondary)
-                }
-            } header: {
-                Text("Details")
-            }
-            Section {
-                switch playlist.platform {
-                case.appleMusic:
-                    if userSettings[0].spotifyActive {
-                        Button {
-                            Task {
-                                isTransferingToSpotify = true
-                            }
-                        } label: {
-                            Text("Transfer to Spotify")
-                                .foregroundStyle(.green)
-                        }
-                    }
-                case .spotify:
-                    if MusicAuthorization.currentStatus == .authorized {
-                        Button {
-                            Task {
-                                isTransferingToApple = true
-                            }
-                        } label: {
-                            Text("Transfer to Apple Music")
-                                .foregroundStyle(.pink)
-                        }
-                    }
-                default:
-                    Image(systemName: "network")
-                }
-                Button {
-                    withAnimation {
-                        modelContext.delete(playlist)
-                        _ = navPath.popLast()
-                    }
-                } label: {
-                    Text("Remove")
-                        .foregroundStyle(.red)
-                }
-            } header: {
-                Text("Options")
-            }
-            Section {
-                ForEach(songs) { song in
-                    SongRow(song: song)
-                }
-            } header: {
-                Text("Songs")
-            }
+            PlaylistDetailView(playlist: playlist, songs: $songs)
+            
+            PlaylistOptionsView(playlist: playlist, navPath: $navPath, isTransferingToSpotify: $isTransferingToSpotify, isTransferingToApple: $isTransferingToApple)
+            
+            PlaylistSongListView(playlist: playlist, songs: $songs)
         }
         .navigationTitle(playlist.name)
         .task {

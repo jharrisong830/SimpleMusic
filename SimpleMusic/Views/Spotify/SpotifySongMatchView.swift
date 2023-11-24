@@ -17,30 +17,31 @@ struct SpotifySongMatchView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    HStack {
-                        SongRow(song: song)
-                        if song.matchState != .successful {
-                            Spacer()
-                            Image(systemName: "xmark.circle.fill")
-                                .symbolRenderingMode(.multicolor)
-                        }
-                    }
-                    HStack {
-                        Text("ISRC")
-                        Spacer()
-                        Text(song.isrc)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.monospaced)
-                    }
-                    HStack {
-                        Text("Spotify ID")
-                        Spacer()
-                        Text(song.platformID)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.monospaced)
-                    }
-                }
+                SongDetailView(song: song)
+//                Section {
+//                    HStack {
+//                        SongRow(song: song)
+//                        if song.matchState != .successful {
+//                            Spacer()
+//                            Image(systemName: "xmark.circle.fill")
+//                                .symbolRenderingMode(.multicolor)
+//                        }
+//                    }
+//                    HStack {
+//                        Text("ISRC")
+//                        Spacer()
+//                        Text(song.isrc)
+//                            .foregroundStyle(.secondary)
+//                            .fontDesign(.monospaced)
+//                    }
+//                    HStack {
+//                        Text("Spotify ID")
+//                        Spacer()
+//                        Text(song.platformID)
+//                            .foregroundStyle(.secondary)
+//                            .fontDesign(.monospaced)
+//                    }
+//                }
                 Section {
                     TextField("Search Spotify", text: $searchText)
                         .onSubmit {

@@ -97,6 +97,7 @@ class SpotifyClient {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
         var playlistURL: String? = "https://api.spotify.com/v1/me/playlists?offset=0&limit=50"
+        let userID = try await getUserID()
         
         
         repeat {
@@ -113,8 +114,9 @@ class SpotifyClient {
             
             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             
-            allPlaylists.append(contentsOf: (jsonData["items"] as! [JSONObject]).map {
-//                PlaylistData(name: $0["name"] as! String, amid: "", spid: $0["id"] as! String, ytid: nil, coverImage: ($0["images"] as! [JSONObject])[0]["url"] as? String, sourcePlatform: .spotify)
+            allPlaylists.append(contentsOf: (jsonData["items"] as! [JSONObject]).filter {
+                ($0["owner"] as! JSONObject)["id"] as! String == userID
+            }.map {
                 PlaylistData(name: $0["name"] as! String, platform: .spotify, platformID: $0["id"] as! String, platformURL: URL(string: ($0["external_urls"] as! JSONObject)["spotify"] as! String), coverImage: URL(string: ($0["images"] as! [JSONObject])[0]["url"] as! String))
             })
             playlistURL = jsonData["next"] as? String
@@ -170,19 +172,24 @@ class SpotifyClient {
         let songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.platformID)
         
         for song in songs {
-            var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=isrc:\(song.isrc)&type=track")!)
-            searchRequest.headerFields[.authorization] = "Bearer \(keychain["sp_access_token"]!)"
-            
-            let (data, _) = try await URLSession.shared.data(for: searchRequest)
-            let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
-            if (jsonData["tracks"] as! JSONObject)["total"] as! Int != 0 {
-                song.platformID = ((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["id"] as! String
-                song.platformURL = URL(string: (((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["external_urls"] as! JSONObject)["spotify"] as! String)
-                song.coverImage = URL(string: ((((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String)
-                song.matchState = .successful
+            if song == SongData.nilSong {
+                song.matchState = .failed
             }
             else {
-                song.matchState = .failed
+                var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=isrc:\(song.isrc)&type=track")!)
+                searchRequest.headerFields[.authorization] = "Bearer \(keychain["sp_access_token"]!)"
+                
+                let (data, _) = try await URLSession.shared.data(for: searchRequest)
+                let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
+                if (jsonData["tracks"] as! JSONObject)["total"] as! Int != 0 {
+                    song.platformID = ((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["id"] as! String
+                    song.platformURL = URL(string: (((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["external_urls"] as! JSONObject)["spotify"] as! String)
+                    song.coverImage = URL(string: ((((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String)
+                    song.matchState = .successful
+                }
+                else {
+                    song.matchState = .failed
+                }
             }
         }
         return songs

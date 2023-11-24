@@ -8,10 +8,57 @@
 import SwiftUI
 
 struct SongDetailView: View {
-    @Binding var song: SongData
+    @Environment(\.openURL) private var openURL
+    
+    let song: SongData
     
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Section {
+            SongRow(song: song)
+            HStack {
+                Text("ISRC")
+                Spacer()
+                Text(song.isrc)
+                    .foregroundStyle(.secondary)
+                    .fontDesign(.monospaced)
+            }
+            HStack {
+                Text("Platform")
+                Spacer()
+                switch song.platform {
+                case .appleMusic:
+                    Text("Apple Music")
+                        .foregroundStyle(.secondary)
+                    Image("AM Logo")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .padding(.horizontal, 2)
+                case .spotify:
+                    Text("Spotify")
+                        .foregroundStyle(.secondary)
+                    Image("Spotify Logo")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .padding(.horizontal, 2)
+                default:
+                    Text("None")
+                        .foregroundStyle(.secondary)
+                }
+            }
+        } header: {
+            Text("Details")
+        }
+            
+        if song.platform == .spotify {
+            Section {
+                Button {
+                    openURL(song.platformURL!)
+                } label: {
+                    Text("View on Spotify")
+                        .foregroundStyle(.green)
+                }
+            }
+        }
     }
 }
 

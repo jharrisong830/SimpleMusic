@@ -2,61 +2,83 @@
 //  PlaylistDetailView.swift
 //  SimpleMusic
 //
-//  Created by John Graham on 8/7/23.
+//  Created by John Graham on 11/24/23.
 //
 
 import SwiftUI
 
-struct PlaylistDetailView: View {    
-    @Bindable var playlist: PlaylistData
+struct PlaylistDetailView: View {
+    @Environment(\.openURL) private var openURL
     
-    @State private var songs: [SongData] = []
+    @Bindable var playlist: PlaylistData
+    @Binding var songs: [SongData]
     
     var body: some View {
-        List {
-            if songs.isEmpty {
-                ProgressView()
+        Section {
+            HStack {
+                Text("Name")
+                Spacer()
+                Text(playlist.name)
+                    .foregroundStyle(.secondary)
             }
-            else {
-                ForEach(songs) { song in
-                    SongRow(song: song)
+            HStack {
+                Text("Platform")
+                Spacer()
+                switch playlist.platform {
+                case .appleMusic:
+                    Text("Apple Music")
+                        .foregroundStyle(.secondary)
+                    Image("AM Logo")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .padding(.horizontal, 2)
+                case .spotify:
+                    Text("Spotify")
+                        .foregroundStyle(.secondary)
+                    Image("Spotify Logo")
+                        .resizable()
+                        .frame(width: 20, height: 20)
+                        .padding(.horizontal, 2)
+                default:
+                    Text("None")
+                        .foregroundStyle(.secondary)
                 }
             }
-        }
-        .navigationTitle(playlist.name)
-        .task {
-            switch playlist.platform {
-            case .spotify:
-                do {
-                    if SpotifyClient.checkRefresh() {
-                        try await SpotifyClient.getRefreshToken()
-                    }
-                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.platformID)
-                } catch {
-                    print("error loading songs")
+            HStack {
+                switch playlist.platform {
+                case .appleMusic:
+                    Text("Apple Music ID")
+                    Spacer()
+                    Text(playlist.platformID)
+                        .foregroundStyle(.secondary)
+                        .fontDesign(.monospaced)
+                case .spotify:
+                    Text("Spotify ID")
+                    Spacer()
+                    Text(playlist.platformID)
+                        .foregroundStyle(.secondary)
+                        .fontDesign(.monospaced)
+                default:
+                    Image(systemName: "network")
                 }
-            case .appleMusic:
-                do {
-                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.platformID)
-                } catch {
-                    print("error loading songs")
-                }
-            default:
-                songs = []
-//            case .youTube:
-//                do {
-//                    if YouTubeClient.checkRefresh() {
-//                        try await YouTubeClient.getRefreshToken()
-//                    }
-//                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
-//                } catch {
-//                    print("error loading vids")
-//                }
             }
+            HStack {
+                Text("Total Songs")
+                Spacer()
+                Text("\(songs.count)")
+                    .foregroundStyle(.secondary)
+            }
+            if playlist.platform == .spotify {
+                Button {
+                    openURL(playlist.platformURL!)
+                } label: {
+                    Text("View on Spotify")
+                    .foregroundStyle(.green)
+                }
+            }
+        } header: {
+            Text("Details")
         }
     }
 }
 
-//#Preview {
-//    PlaylistDetailView()
-//}

@@ -18,30 +18,31 @@ struct AppleSongMatchView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    HStack {
-                        SongRow(song: song)
-                        if song.matchState != .successful {
-                            Spacer()
-                            Image(systemName: "xmark.circle.fill")
-                                .symbolRenderingMode(.multicolor)
-                        }
-                    }
-                    HStack {
-                        Text("ISRC")
-                        Spacer()
-                        Text(song.isrc)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.monospaced)
-                    }
-                    HStack {
-                        Text("Apple Music ID")
-                        Spacer()
-                        Text(song.platformID)
-                            .foregroundStyle(.secondary)
-                            .fontDesign(.monospaced)
-                    }
-                }
+                SongDetailView(song: song)
+//                Section {
+//                    HStack {
+//                        SongRow(song: song)
+//                        if song.matchState != .successful {
+//                            Spacer()
+//                            Image(systemName: "xmark.circle.fill")
+//                                .symbolRenderingMode(.multicolor)
+//                        }
+//                    }
+//                    HStack {
+//                        Text("ISRC")
+//                        Spacer()
+//                        Text(song.isrc)
+//                            .foregroundStyle(.secondary)
+//                            .fontDesign(.monospaced)
+//                    }
+//                    HStack {
+//                        Text("Apple Music ID")
+//                        Spacer()
+//                        Text(song.platformID)
+//                            .foregroundStyle(.secondary)
+//                            .fontDesign(.monospaced)
+//                    }
+//                }
                 Section {
                     TextField("Search Apple Music", text: $searchText)
                         .onSubmit {
