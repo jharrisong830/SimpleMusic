@@ -98,7 +98,7 @@ struct ConfirmTransferToSpotifySheet: View {
                             }
                         } label: {
                             Text("Add")
-                                .foregroundStyle(.green)
+                                .foregroundStyle(Color("SpotifyGreen"))
                         }
                     }
                 }

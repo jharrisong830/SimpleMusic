@@ -73,7 +73,7 @@ struct PlaylistDetailView: View {
                     openURL(playlist.platformURL!)
                 } label: {
                     Text("View on Spotify")
-                        .foregroundStyle(playlist.platformURL == nil ? .gray : .green)
+                        .foregroundStyle(playlist.platformURL == nil ? .gray : Color("SpotifyGreen"))
                 }
                 .disabled(playlist.platformURL == nil)
             }

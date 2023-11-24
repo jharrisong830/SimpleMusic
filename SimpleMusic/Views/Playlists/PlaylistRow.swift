@@ -15,12 +15,12 @@ struct PlaylistRow: View {
             AsyncImage(url: playlist.coverImage) { image in
                 image.resizable()
                     .frame(width: 64, height: 64)
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
+                    .clipShape(RoundedRectangle(cornerRadius: playlist.platform != .spotify ? 5 : 0))
             } placeholder: {
                 RoundedRectangle(cornerRadius: 5)
                     .frame(width: 64, height: 64)
                     .foregroundStyle(.gray)
-                    .overlay(content: {Image(systemName: "questionmark.app.dashed").foregroundStyle(playlist.platform == .spotify ? .green : .pink)})
+                    .overlay(content: {Image(systemName: "questionmark.app.dashed").foregroundStyle(playlist.platform == .spotify ? Color("SpotifyGreen") : .pink)})
             }
             Text(playlist.name)
         }

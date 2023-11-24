@@ -30,7 +30,7 @@ struct PlaylistOptionsView: View {
                         isTransferingToSpotify = true
                     } label: {
                         Text("Transfer to Spotify")
-                            .foregroundStyle(.green)
+                            .foregroundStyle(Color("SpotifyGreen"))
                     }
                 }
             case .spotify:

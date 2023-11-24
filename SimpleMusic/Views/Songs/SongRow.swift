@@ -15,7 +15,7 @@ struct SongRow: View {
             AsyncImage(url: song.coverImage) { image in
                 image.resizable()
                     .frame(width: 37.5, height: 37.5)
-                    .clipShape(RoundedRectangle(cornerRadius: 2.5))
+                    .clipShape(RoundedRectangle(cornerRadius: song.platform != .spotify ? 2.5 : 0))
             } placeholder: {
                 RoundedRectangle(cornerRadius: 2.5)
                     .frame(width: 37.5, height: 37.5)

@@ -68,13 +68,13 @@ struct AccountsView: View {
                             }
                         } label: {
                             Text("Connect Spotify Account")
-                                .foregroundStyle(.green)
+                                .foregroundStyle(Color("SpotifyGreen"))
                         }
                         .alert("Spotify Authorization Failed", isPresented: $spAuthRequestFailed, actions: {}, message: {Text("Failed to authorize your Spotify account. Please try again later.")})
                     }
                     else {
                         Text("Account authorized!")
-                            .listRowBackground(Color.green)
+                            .listRowBackground(Color("SpotifyGreen"))
                         Button {
                             withAnimation {
                                 do {
