@@ -36,6 +36,7 @@ class AppleMusicClient {
                     let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.platformID))
                     let amSong = try await amSongReq.response()
                     song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)
+                    song.platformURL = amSong.items[0].url
                     matches += 1
                     song.matchState = .successful
                 }
@@ -69,6 +70,7 @@ class AppleMusicClient {
                 let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.platformID))
                 let amSong = try await amSongReq.response()
                 song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)
+                song.platformURL = amSong.items[0].url
                 song.matchState = .successful
             }
         }
@@ -161,7 +163,7 @@ class AppleMusicClient {
                                          isrc: resourceResponse.isrc!,
                                          platform: .appleMusic,
                                          platformID: resourceResponse.id.rawValue,
-                                         platformURL: nil,
+                                         platformURL: resourceResponse.url,
                                          coverImage: resourceResponse.artwork!.url(width: 300, height: 300)
                                         ))
             }

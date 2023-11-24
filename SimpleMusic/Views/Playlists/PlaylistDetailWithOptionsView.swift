@@ -11,7 +11,6 @@ import SwiftData
 
 struct PlaylistDetailWithOptionsView: View {
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.openURL) private var openURL
     
     @Query private var userSettings: [UserSettings]
     

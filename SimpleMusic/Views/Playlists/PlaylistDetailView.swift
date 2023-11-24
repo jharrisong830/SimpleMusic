@@ -73,8 +73,18 @@ struct PlaylistDetailView: View {
                     openURL(playlist.platformURL!)
                 } label: {
                     Text("View on Spotify")
-                    .foregroundStyle(.green)
+                        .foregroundStyle(playlist.platformURL == nil ? .gray : .green)
                 }
+                .disabled(playlist.platformURL == nil)
+            }
+            else if playlist.platform == .appleMusic {
+                Button {
+                    openURL(playlist.platformURL!)
+                } label: {
+                    Text("View on Apple Music")
+                        .foregroundStyle(playlist.platformURL == nil ? .gray : .pink)
+                }
+                .disabled(playlist.platformURL == nil)
             }
         } header: {
             Text("Details")
