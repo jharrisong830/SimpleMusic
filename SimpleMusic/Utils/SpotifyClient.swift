@@ -132,7 +132,7 @@ class SpotifyClient {
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")
         
         var songURL: String? = "https://api.spotify.com/v1/playlists/\(playlist.platformID)/tracks?offset=0&limit=50"
-        
+        var count = 0
         
         repeat {
             var songReq = URLRequest(url: URL(string: songURL!)!)
@@ -147,18 +147,20 @@ class SpotifyClient {
             }
             let jsonData = try JSONSerialization.jsonObject(with: data) as! JSONObject
             
-            allSongs.append(contentsOf: (jsonData["items"] as! [JSONObject]).map {
-                SongData(name: ($0["track"] as! JSONObject)["name"] as! String,
-                         artists: (($0["track"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
-                         albumName: (($0["track"] as! JSONObject)["album"] as! JSONObject)["name"] as! String,
-                         albumArtists: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
-                         isrc: (($0["track"] as! JSONObject)["external_ids"] as! JSONObject)["isrc"] as! String,
-                         platform: .spotify,
-                         platformID: ($0["track"] as! JSONObject)["id"] as! String,
-                         platformURL: URL(string: (($0["track"] as! JSONObject)["external_urls"] as! JSONObject)["spotify"] as! String),
-                         coverImage: URL(string: ((($0["track"] as! JSONObject)["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String),
-                         playlist: nil)
-            })
+            for obj in jsonData["items"] as! [JSONObject] {
+                allSongs.append(SongData(name: (obj["track"] as! JSONObject)["name"] as! String,
+                                         artists: ((obj["track"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
+                                         albumName: ((obj["track"] as! JSONObject)["album"] as! JSONObject)["name"] as! String,
+                                         albumArtists: (((obj["track"] as! JSONObject)["album"] as! JSONObject)["artists"] as! [JSONObject]).map({$0["name"] as! String}),
+                                         isrc: ((obj["track"] as! JSONObject)["external_ids"] as! JSONObject)["isrc"] as! String,
+                                         platform: .spotify,
+                                         platformID: (obj["track"] as! JSONObject)["id"] as! String,
+                                         platformURL: URL(string: ((obj["track"] as! JSONObject)["external_urls"] as! JSONObject)["spotify"] as! String),
+                                         coverImage: URL(string: (((obj["track"] as! JSONObject)["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String),
+                                         playlist: nil,
+                                         index: count))
+                count += 1
+            }
             songURL = jsonData["next"] as? String
         } while songURL != nil
         
@@ -172,9 +174,9 @@ class SpotifyClient {
         
         var newSongs: [SongData] = []
         
-        for song in playlist.songs {
+        for song in playlist.songs.sorted(by: { $0.index < $1.index }) {
             if song == SongData.nilSong {
-                newSongs.append(SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: nil, matchState: .failed))
+                newSongs.append(SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: nil, index: song.index, matchState: .failed))
             }
             else {
                 var searchRequest = HTTPRequest(method: .get, url: URL(string: "https://api.spotify.com/v1/search?q=isrc:\(song.isrc)&type=track")!)
@@ -193,10 +195,11 @@ class SpotifyClient {
                                              platformURL: URL(string: (((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["external_urls"] as! JSONObject)["spotify"] as! String),
                                              coverImage: URL(string: ((((jsonData["tracks"] as! JSONObject)["items"] as! [JSONObject])[0]["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String),
                                              playlist: nil,
+                                             index: song.index,
                                              matchState: .successful))
                 }
                 else {
-                    newSongs.append(SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: nil, matchState: .failed))
+                    newSongs.append(SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: nil, index: song.index, matchState: .failed))
                 }
             }
         }
@@ -225,7 +228,8 @@ class SpotifyClient {
                      platformID: $0["id"] as! String,
                      platformURL: URL(string: ($0["external_urls"] as! JSONObject)["spotify"] as! String),
                      coverImage: URL(string: (($0["album"] as! JSONObject)["images"] as! [JSONObject])[2]["url"] as! String),
-                     playlist: nil)
+                     playlist: nil,
+                     index: 0)
         }
     }
     
@@ -250,7 +254,7 @@ class SpotifyClient {
     
     static func addSongsToPlaylist(spotifyPlaylistID: String, songs: [SongData]) async throws {
         let URIBody: [String: Any] = [
-            "uris": songs.map({"spotify:track:\($0.platformID)"}),
+            "uris": songs.sorted(by: { $0.index < $1.index }).map({"spotify:track:\($0.platformID)"}),
             "position": 0
         ]
         let keychain = Keychain(service: "John-Graham.SimpleMusic.APIKeyStore")

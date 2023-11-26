@@ -151,6 +151,7 @@ struct ConfirmTransferToAppleSheet: View {
         .task {
             do {
                 matchedSongs = try await AppleMusicClient.getSongMatches(playlist: playlist)
+                matchedSongs.sort(by: { $0.index < $1.index })
                 isMatchComplete = true
             } catch {
                 print("error")

@@ -16,7 +16,6 @@ struct SimpleMusicApp: App {
     
     init() {
         do {
-//            container = try ModelContainer(for: PlaylistData.self, SongData.self, migrationPlan: PlaylistDataMigrationPlan.self, configurations: SongDataMigrationPlan.self)
             container = try ModelContainer(for: SongData.self, PlaylistData.self, UserSettings.self, migrationPlan: SimpleMusicSchemaMigrationPlan.self, configurations: ModelConfiguration())
         } catch {
             fatalError("could not initialize container")

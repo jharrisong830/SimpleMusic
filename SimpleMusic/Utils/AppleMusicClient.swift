@@ -25,7 +25,7 @@ class AppleMusicClient {
                 let songDataArray = (jsonData["data"] as! [JSONObject])
                 if songDataArray.isEmpty {
                     print("Nothing found for \(song.name), skipping...")
-                    newSongs.append(SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: nil, matchState: .failed))
+                    newSongs.append(SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: nil, index: song.index, matchState: .failed))
                 }
                 else {
                     let songData = songDataArray[0]
@@ -45,6 +45,7 @@ class AppleMusicClient {
                                              platformURL: amSong.items[0].url,
                                              coverImage: amSong.items[0].artwork?.url(width: 300, height: 300),
                                              playlist: nil,
+                                             index: song.index,
                                              matchState: .successful))
                 }
             }
@@ -156,7 +157,7 @@ class AppleMusicClient {
             }
             // (($0["attributes"] as! JSONObject)["playParams"] as! JSONObject)["catalogId"] as! String
         }
-        for id in allIDs {
+        for (ind, id) in allIDs.enumerated() {
             if id.isEmpty {
                 allSongs.append(SongData.nilSong)
             }
@@ -172,7 +173,8 @@ class AppleMusicClient {
                                          platformID: resourceResponse.id.rawValue,
                                          platformURL: resourceResponse.url,
                                          coverImage: resourceResponse.artwork!.url(width: 300, height: 300),
-                                         playlist: nil
+                                         playlist: nil,
+                                         index: ind
                                         ))
             }
         }

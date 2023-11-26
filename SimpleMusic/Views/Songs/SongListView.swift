@@ -12,7 +12,7 @@ struct SongListView: View {
     
     var body: some View {
         Section {
-            ForEach(songs) { song in
+            ForEach(songs.sorted(by: { $0.index < $1.index })) { song in
                 NavigationLink {
                     List {
                         SongDetailView(song: song)
