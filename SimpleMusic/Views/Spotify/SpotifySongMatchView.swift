@@ -18,6 +18,18 @@ struct SpotifySongMatchView: View {
         NavigationStack {
             List {
                 SongDetailView(song: song)
+                HStack {
+                    Text("Match Status")
+                    Spacer()
+                    if song.matchState == .successful {
+                        Label("Matched", systemImage: "checkmark.circle.fill")
+                            .symbolRenderingMode(.multicolor)
+                    }
+                    else {
+                        Label("Not Matched", systemImage: "xmark.circle.fill")
+                            .symbolRenderingMode(.multicolor)
+                    }
+                }
 //                Section {
 //                    HStack {
 //                        SongRow(song: song)

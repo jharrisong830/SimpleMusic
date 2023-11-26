@@ -12,11 +12,21 @@ typealias JSONObject = Dictionary<String, Any>
 
 @main
 struct SimpleMusicApp: App {
+    let container: ModelContainer
+    
+    init() {
+        do {
+//            container = try ModelContainer(for: PlaylistData.self, SongData.self, migrationPlan: PlaylistDataMigrationPlan.self, configurations: SongDataMigrationPlan.self)
+            container = try ModelContainer(for: SongData.self, PlaylistData.self, UserSettings.self, migrationPlan: SimpleMusicSchemaMigrationPlan.self, configurations: ModelConfiguration())
+        } catch {
+            fatalError("could not initialize container")
+        }
+    }
     
     var body: some Scene {
         WindowGroup {
             MainView()
         }
-        .modelContainer(for: [PlaylistData.self, SongData.self, UserSettings.self])
+        .modelContainer(container)
     }
 }

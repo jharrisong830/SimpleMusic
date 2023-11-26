@@ -15,10 +15,59 @@ enum SourcePlatform: Codable {
     case none
 }
 
-struct PlaylistDataMigrationPlan: SchemaMigrationPlan {
-    static let schemas: [VersionedSchema.Type] = [PlaylistDataSchemaRevV1.self]
-    static let stages: [MigrationStage] = []
+//struct PlaylistDataMigrationPlan: SchemaMigrationPlan {
+//    static let schemas: [VersionedSchema.Type] = [PlaylistDataSchemaRevV1.self]
+//    static let stages: [MigrationStage] = [v1RevtoV2Rev]
+//    
+//    static let v1RevtoV2Rev = MigrationStage.custom(fromVersion: PlaylistDataSchemaRevV1.self,
+//                                                    toVersion: PlaylistDataSchemaRevV2.self,
+//                                                    willMigrate: { context in
+//                                                                    let playlists = try context.fetch(FetchDescriptor<PlaylistDataSchemaRevV2.PlaylistData>())
+//                                                                    for playlist in playlists {
+//                                                                        context.insert(PlaylistDataSchemaRevV2.PlaylistData(name: playlist.name, 
+//                                                                                                                            platform: playlist.platform,
+//                                                                                                                            platformID: playlist.platformID,
+//                                                                                                                            platformURL: playlist.platformURL,
+//                                                                                                                            coverImage: playlist.coverImage,
+//                                                                                                                            songs: []))
+//                                                                        context.delete(playlist)
+//                                                                    }
+//                                                                    try context.save()},
+//                                                    didMigrate: nil)
+//}
+
+
+struct PlaylistDataSchemaRevV2: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [PlaylistData.self]
+    static let versionIdentifier: Schema.Version = .init(2, 0, 0)
+    
+    @Model
+    class PlaylistData {
+        var name: String
+        var platform: SourcePlatform
+        
+        @Attribute(.unique)
+        var platformID: String
+        
+        var platformURL: URL?
+        var coverImage: URL?
+        
+        @Relationship(deleteRule: .cascade, inverse: \SongDataSchemaRevV2.SongData.playlist)
+        var songs: [SongData]
+        
+        init(name: String, platform: SourcePlatform, platformID: String, platformURL: URL?, coverImage: URL?, songs: [SongData] = []) {
+            self.name = name
+            self.platform = platform
+            self.platformID = platformID
+            self.platformURL = platformURL
+            self.coverImage = coverImage
+            self.songs = songs
+        }
+    }
 }
+
+typealias PlaylistData = PlaylistDataSchemaRevV2.PlaylistData
+
 
 
 struct PlaylistDataSchemaRevV1: VersionedSchema {
@@ -43,7 +92,7 @@ struct PlaylistDataSchemaRevV1: VersionedSchema {
     }
 }
 
-typealias PlaylistData = PlaylistDataSchemaRevV1.PlaylistData
+
 
 
 //struct PlaylistDataMigrationPlan: SchemaMigrationPlan {

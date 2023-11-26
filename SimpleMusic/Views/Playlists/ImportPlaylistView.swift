@@ -18,8 +18,8 @@ struct ImportPlaylistView: View {
     
     var body: some View {
         List {
-            PlaylistDetailView(playlist: playlist, songs: $songs)
-            PlaylistSongListView(playlist: playlist, songs: $songs)
+            PlaylistDetailView(playlist: playlist, songs: $songs) 
+            SongListView(songs: $songs)
         }
         .navigationTitle(playlist.name)
         .toolbar {
@@ -27,6 +27,10 @@ struct ImportPlaylistView: View {
                 Button {
                     withAnimation {
                         modelContext.insert(playlist)
+                        for song in songs {
+                            song.playlist = playlist
+                            modelContext.insert(song)
+                        }
                         _ = navPath.popLast()
                         isPresented = false
                     }
@@ -43,13 +47,13 @@ struct ImportPlaylistView: View {
                     if SpotifyClient.checkRefresh() {
                         try await SpotifyClient.getRefreshToken()
                     }
-                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.platformID)
+                    songs = try await SpotifyClient.getPlaylistSongs(playlist: playlist)
                 } catch {
                     print("error loading songs")
                 }
             case .appleMusic:
                 do {
-                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.platformID)
+                    songs = try await AppleMusicClient.getPlaylistSongs(playlist: playlist)
                 } catch {
                     print("error loading songs")
                 }

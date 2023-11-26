@@ -9,27 +9,13 @@ import SwiftUI
 
 struct PlaylistSongListView: View {
     @Bindable var playlist: PlaylistData
-    @Binding var songs: [SongData]
     
     var body: some View {
-        Section {
-            if songs.isEmpty {
-                ProgressView()
-            }
-            else {
-                ForEach(songs) { song in
-                    NavigationLink {
-                        List {
-                            SongDetailView(song: song)
-                        }
-                        .navigationTitle(song.name)
-                    } label: {
-                        SongRow(song: song)
-                    }
-                }
-            }
-        } header: {
-            Text("Songs")
+        if playlist.songs.isEmpty {
+            ProgressView()
+        }
+        else {
+            SongListView(songs: $playlist.songs)
         }
     }
 }

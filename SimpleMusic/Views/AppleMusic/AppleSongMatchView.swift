@@ -19,6 +19,18 @@ struct AppleSongMatchView: View {
         NavigationStack {
             List {
                 SongDetailView(song: song)
+                HStack {
+                    Text("Match Status")
+                    Spacer()
+                    if song.matchState == .successful {
+                        Label("Matched", systemImage: "checkmark.circle.fill")
+                            .symbolRenderingMode(.multicolor)
+                    }
+                    else {
+                        Label("Not Matched", systemImage: "xmark.circle.fill")
+                            .symbolRenderingMode(.multicolor)
+                    }
+                }
 //                Section {
 //                    HStack {
 //                        SongRow(song: song)
@@ -52,7 +64,7 @@ struct AppleSongMatchView: View {
                                 searchResults = []
                                 let catalogResults = try await catalogSearch.response().songs
                                 for amSong in catalogResults {
-                                    searchResults.append(SongData(name: amSong.title, artists: [amSong.artistName], albumName: amSong.albumTitle ?? "", albumArtists: [amSong.artistName], isrc: amSong.isrc ?? "", platform: .appleMusic, platformID: amSong.id.rawValue, platformURL: nil, coverImage: amSong.artwork?.url(width: 300, height: 300)))
+                                    searchResults.append(SongData(name: amSong.title, artists: [amSong.artistName], albumName: amSong.albumTitle ?? "", albumArtists: [amSong.artistName], isrc: amSong.isrc ?? "", platform: .appleMusic, platformID: amSong.id.rawValue, platformURL: amSong.url, coverImage: amSong.artwork?.url(width: 300, height: 300), playlist: nil))
                                 }
                                 isPresented = true
                                 searchText = ""

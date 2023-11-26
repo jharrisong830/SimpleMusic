@@ -17,49 +17,49 @@ struct PlaylistDetailWithOptionsView: View {
     @Bindable var playlist: PlaylistData
     @Binding var navPath: [PlaylistData]
     
-    @State private var songs: [SongData] = []
+//    @State private var songs: [SongData] = []
     @State private var isTransferingToApple = false
     @State private var isTransferingToSpotify = false
     
     var body: some View {
         List {
-            PlaylistDetailView(playlist: playlist, songs: $songs)
+            PlaylistDetailView(playlist: playlist, songs: $playlist.songs)
             
             PlaylistOptionsView(playlist: playlist, navPath: $navPath, isTransferingToSpotify: $isTransferingToSpotify, isTransferingToApple: $isTransferingToApple)
             
-            PlaylistSongListView(playlist: playlist, songs: $songs)
+            PlaylistSongListView(playlist: playlist)
         }
         .navigationTitle(playlist.name)
-        .task {
-            switch playlist.platform {
-            case .spotify:
-                do {
-                    if SpotifyClient.checkRefresh() {
-                        try await SpotifyClient.getRefreshToken()
-                    }
-                    songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.platformID)
-                } catch {
-                    print("error loading songs")
-                }
-            case .appleMusic:
-                do {
-                    songs = try await AppleMusicClient.getPlaylistSongs(playlistID: playlist.platformID)
-                } catch {
-                    print("error loading songs")
-                }
-            default:
-                songs = []
-//            case .youTube:
+//        .task {
+//            switch playlist.platform {
+//            case .spotify:
 //                do {
-//                    if YouTubeClient.checkRefresh() {
-//                        try await YouTubeClient.getRefreshToken()
+//                    if SpotifyClient.checkRefresh() {
+//                        try await SpotifyClient.getRefreshToken()
 //                    }
-//                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
+//                    songs = try await SpotifyClient.getPlaylistSongs(playlist: playlist)
 //                } catch {
-//                    print("error loading vids")
+//                    print("error loading songs")
 //                }
-            }
-        }
+//            case .appleMusic:
+//                do {
+//                    songs = try await AppleMusicClient.getPlaylistSongs(playlist: playlist)
+//                } catch {
+//                    print("error loading songs")
+//                }
+//            default:
+//                songs = []
+////            case .youTube:
+////                do {
+////                    if YouTubeClient.checkRefresh() {
+////                        try await YouTubeClient.getRefreshToken()
+////                    }
+////                    songs = try await YouTubeClient.getPlaylistItems(playlistID: playlist.ytid!)
+////                } catch {
+////                    print("error loading vids")
+////                }
+//            }
+//        }
         .sheet(isPresented: $isTransferingToApple) {
             ConfirmTransferToAppleSheet(playlist: playlist, isPresented: $isTransferingToApple)
         }
@@ -70,6 +70,3 @@ struct PlaylistDetailWithOptionsView: View {
     
 }
 
-//#Preview {
-//    PlaylistDetailWithOptionsView()
-//}

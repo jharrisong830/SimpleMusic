@@ -11,10 +11,10 @@ import MusicKit
 
 class AppleMusicClient {
     static func getSongMatches(playlist: PlaylistData) async throws -> [SongData] {
-        let songs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.platformID)
-        let total = songs.count
+        let total = playlist.songs.count
         var matches = 0
-        for song in songs {
+        var newSongs: [SongData] = []
+        for song in playlist.songs {
             let musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/catalog/us/songs?filter[isrc]=\(song.isrc)")!)
             let musicReq = MusicDataRequest(urlRequest: musicURL)
             let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
@@ -25,57 +25,64 @@ class AppleMusicClient {
                 let songDataArray = (jsonData["data"] as! [JSONObject])
                 if songDataArray.isEmpty {
                     print("Nothing found for \(song.name), skipping...")
-                    song.matchState = .failed
+                    newSongs.append(SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: nil, matchState: .failed))
                 }
                 else {
                     let songData = songDataArray[0]
                     let albumMatchID = parseAlbums(amDataResponse: songDataArray, originalSong: song)
-                    song.platformID = albumMatchID ?? songData["id"] as! String
-                    song.platform = .appleMusic
+                    let newID = albumMatchID ?? songData["id"] as! String
                     print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
-                    let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.platformID))
+                    let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(newID))
                     let amSong = try await amSongReq.response()
-                    song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)
-                    song.platformURL = amSong.items[0].url
                     matches += 1
-                    song.matchState = .successful
+                    newSongs.append(SongData(name: song.name,
+                                             artists: song.artists,
+                                             albumName: song.albumName,
+                                             albumArtists: song.albumArtists,
+                                             isrc: song.isrc,
+                                             platform: .appleMusic,
+                                             platformID: newID,
+                                             platformURL: amSong.items[0].url,
+                                             coverImage: amSong.items[0].artwork?.url(width: 300, height: 300),
+                                             playlist: nil,
+                                             matchState: .successful))
                 }
             }
         }
         print("Matched \(matches) / \(total) songs.")
-        return songs
+        return newSongs
     }
     
     
     
-    static func getSingleSongMatch(song: SongData) async throws -> SongData {
-        let musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/catalog/us/songs?filter[isrc]=\(song.isrc)")!)
-        let musicReq = MusicDataRequest(urlRequest: musicURL)
-        let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
-        if !jsonData.contains(where: {$0.key == "data"}) {
-            print("Nothing found for \(song.name), skipping...")
-        }
-        else {
-            let songDataArray = (jsonData["data"] as! [JSONObject])
-            if songDataArray.isEmpty {
-                print("Nothing found for \(song.name), skipping...")
-                song.matchState = .failed
-            }
-            else {
-                let songData = songDataArray[0]
-                let albumMatchID = parseAlbums(amDataResponse: songDataArray, originalSong: song)
-                song.platformID = albumMatchID ?? songData["id"] as! String
-                song.platform = .appleMusic
-                print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
-                let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.platformID))
-                let amSong = try await amSongReq.response()
-                song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)
-                song.platformURL = amSong.items[0].url
-                song.matchState = .successful
-            }
-        }
-        return song
-    }
+//    static func getSingleSongMatch(song: SongData) async throws -> SongData {
+//        let musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/catalog/us/songs?filter[isrc]=\(song.isrc)")!)
+//        let musicReq = MusicDataRequest(urlRequest: musicURL)
+//        let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
+//        if !jsonData.contains(where: {$0.key == "data"}) {
+//            print("Nothing found for \(song.name), skipping...")
+//        }
+//        else {
+//            let songDataArray = (jsonData["data"] as! [JSONObject])
+//            if songDataArray.isEmpty {
+//                print("Nothing found for \(song.name), skipping...")
+//                song.matchState = .failed
+//            }
+//            else {
+//                let songData = songDataArray[0]
+//                let albumMatchID = parseAlbums(amDataResponse: songDataArray, originalSong: song)
+//                song.platformID = albumMatchID ?? songData["id"] as! String
+//                song.platform = .appleMusic
+//                print("Matched \((songData["attributes"] as! JSONObject)["name"] as! String) by \((songData["attributes"] as! JSONObject)["artistName"] as! String)")
+//                let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(song.platformID))
+//                let amSong = try await amSongReq.response()
+//                song.coverImage = amSong.items[0].artwork?.url(width: 300, height: 300)
+//                song.platformURL = amSong.items[0].url
+//                song.matchState = .successful
+//            }
+//        }
+//        return song
+//    }
     
     
     
@@ -131,10 +138,10 @@ class AppleMusicClient {
         return allPlaylists
     }
     
-    static func getPlaylistSongs(playlistID: String) async throws -> [SongData] {
+    static func getPlaylistSongs(playlist: PlaylistData) async throws -> [SongData] {
         var allSongs: [SongData] = []
         
-        var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(playlistID)/tracks")!)
+        var musicURL = URLRequest(url: URL(string: "https://api.music.apple.com/v1/me/library/playlists/\(playlist.platformID)/tracks")!)
         musicURL.httpMethod = "GET"
         let musicReq = MusicDataRequest(urlRequest: musicURL)
         let jsonData = try await JSONSerialization.jsonObject(with: musicReq.response().data) as! JSONObject
@@ -164,7 +171,8 @@ class AppleMusicClient {
                                          platform: .appleMusic,
                                          platformID: resourceResponse.id.rawValue,
                                          platformURL: resourceResponse.url,
-                                         coverImage: resourceResponse.artwork!.url(width: 300, height: 300)
+                                         coverImage: resourceResponse.artwork!.url(width: 300, height: 300),
+                                         playlist: nil
                                         ))
             }
         }

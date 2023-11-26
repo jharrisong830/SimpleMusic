@@ -15,10 +15,113 @@ enum MatchState: Codable {
 }
 
 
-struct SongDataMigrationPlan: SchemaMigrationPlan {
-    static let schemas: [VersionedSchema.Type] = [SongDataSchemaRevV1.self]
-    static let stages: [MigrationStage] = []
+//struct SongDataMigrationPlan: SchemaMigrationPlan {
+//    static let schemas: [VersionedSchema.Type] = [SongDataSchemaRevV1.self, SongDataSchemaRevV2.self, SongDataSchemaRevV3.self]
+//    static let stages: [MigrationStage] = [v1RevtoV2Rev, v2RevtoV3Rev]
+//    
+//    static let v1RevtoV2Rev = MigrationStage.custom(fromVersion: SongDataSchemaRevV1.self,
+//                                                    toVersion: SongDataSchemaRevV2.self,
+//                                                    willMigrate: { context in
+//                                                                    let songs = try context.fetch(FetchDescriptor<SongDataSchemaRevV1.SongData>())
+//                                                                    for song in songs {
+//                                                                        context.delete(song)
+//                                                                    }
+//                                                                    try context.save()
+//                                                                },
+//                                                    didMigrate: nil)
+//    
+//    static let v2RevtoV3Rev = MigrationStage.custom(fromVersion: SongDataSchemaRevV2.self,
+//                                                    toVersion: SongDataSchemaRevV3.self,
+//                                                    willMigrate: { context in
+//                                                                    let songs = try context.fetch(FetchDescriptor<SongDataSchemaRevV2.SongData>())
+//                                                                    for song in songs {
+//                                                                        context.delete(song)
+//                                                                        var newSong = SongDataSchemaRevV3.SongData(name: song.name, artists: song.artists, albumName: song.albumName, albumArtists: song.albumArtists, isrc: song.isrc, platform: song.platform, platformID: song.platformID, platformURL: song.platformURL, coverImage: song.coverImage, playlist: song.playlist, matchState: song.matchState)
+//                                                                        context.insert(newSong)
+//                                                                    }
+//                                                                    try context.save()
+//                                                                },
+//                                                    didMigrate: nil)
+//}
+
+
+struct SongDataSchemaRevV3: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [SongData.self]
+    static let versionIdentifier: Schema.Version = .init(3, 0, 0)
+    
+    @Model
+    class SongData {
+        var name: String
+        var artists: [String]
+        var albumName: String
+        var albumArtists: [String]
+        var isrc: String
+        var platform: SourcePlatform
+        var platformID: String
+        var platformURL: URL?
+        var coverImage: URL?
+        var playlist: PlaylistData?
+        var matchState: MatchState
+        
+        init(name: String, artists: [String], albumName: String, albumArtists: [String], isrc: String, platform: SourcePlatform, platformID: String, platformURL: URL?, coverImage: URL?, playlist: PlaylistData?, matchState: MatchState = .notDetermined) {
+            self.name = name
+            self.artists = artists
+            self.albumName = albumName
+            self.albumArtists = albumArtists
+            self.isrc = isrc
+            self.platform = platform
+            self.platformID = platformID
+            self.platformURL = platformURL
+            self.coverImage = coverImage
+            self.playlist = playlist
+            self.matchState = matchState
+        }
+    }
 }
+
+
+typealias SongData = SongDataSchemaRevV3.SongData
+
+
+
+struct SongDataSchemaRevV2: VersionedSchema {
+    static let models: [any PersistentModel.Type] = [SongData.self]
+    static let versionIdentifier: Schema.Version = .init(2, 0, 0)
+    
+    @Model
+    class SongData {
+        var name: String
+        var artists: [String]
+        var albumName: String
+        var albumArtists: [String]
+        
+        @Attribute(.unique)
+        var isrc: String
+        
+        var platform: SourcePlatform
+        var platformID: String
+        var platformURL: URL?
+        var coverImage: URL?
+        var playlist: PlaylistData?
+        var matchState: MatchState
+        
+        init(name: String, artists: [String], albumName: String, albumArtists: [String], isrc: String, platform: SourcePlatform, platformID: String, platformURL: URL?, coverImage: URL?, playlist: PlaylistData?, matchState: MatchState = .notDetermined) {
+            self.name = name
+            self.artists = artists
+            self.albumName = albumName
+            self.albumArtists = albumArtists
+            self.isrc = isrc
+            self.platform = platform
+            self.platformID = platformID
+            self.platformURL = platformURL
+            self.coverImage = coverImage
+            self.playlist = playlist
+            self.matchState = matchState
+        }
+    }
+}
+
+
 
 struct SongDataSchemaRevV1: VersionedSchema {
     static let models: [any PersistentModel.Type] = [SongData.self]
@@ -52,20 +155,20 @@ struct SongDataSchemaRevV1: VersionedSchema {
     }
 }
 
-typealias SongData = SongDataSchemaRevV1.SongData
+
 
 
 extension SongData {
-    static let emptySong = SongData(name: "", artists: [], albumName: "", albumArtists: [], isrc: "", platform: .none, platformID: "", platformURL: nil, coverImage: nil, matchState: .notDetermined)
+    static let emptySong = SongData(name: "", artists: [], albumName: "", albumArtists: [], isrc: "", platform: .none, platformID: "", platformURL: nil, coverImage: nil, playlist: nil, matchState: .notDetermined)
     
-    static let nilSong = SongData(name: "Unknown Song", artists: [], albumName: "", albumArtists: [], isrc: "", platform: .none, platformID: "", platformURL: nil, coverImage: nil, matchState: .failed)
+    static let nilSong = SongData(name: "Unknown Song", artists: [], albumName: "", albumArtists: [], isrc: "", platform: .none, platformID: "", platformURL: nil, coverImage: nil, playlist: nil, matchState: .failed)
 }
 
 
 struct SampleSongs { // sample data for SwiftData container
     static let sampleSongs = [
-        SongData(name: "Death of a Bachelor", artists: ["Panic! At the Disco"], albumName: "Death of a Bachelor", albumArtists: ["Panic! at the Disco"], isrc: "12345", platform: .appleMusic, platformID: "appleMusic-1", platformURL: nil, coverImage: nil),
-        SongData(name: "MESS U MADE", artists: ["MICHELLE"], albumName: "AFTER DINNER WE TALK DREAMS", albumArtists: ["MICHELLE"], isrc: "67890", platform: .spotify, platformID: "spotify-1", platformURL: nil, coverImage: nil)
+        SongData(name: "Death of a Bachelor", artists: ["Panic! At the Disco"], albumName: "Death of a Bachelor", albumArtists: ["Panic! at the Disco"], isrc: "12345", platform: .appleMusic, platformID: "appleMusic-1", platformURL: nil, coverImage: nil, playlist: nil),
+        SongData(name: "MESS U MADE", artists: ["MICHELLE"], albumName: "AFTER DINNER WE TALK DREAMS", albumArtists: ["MICHELLE"], isrc: "67890", platform: .spotify, platformID: "spotify-1", platformURL: nil, coverImage: nil, playlist: nil)
     ]
 }
 

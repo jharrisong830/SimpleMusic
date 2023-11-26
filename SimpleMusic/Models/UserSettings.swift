@@ -10,12 +10,12 @@ import SwiftData
 
 
 
-struct UserSettingsMigrationPlan: SchemaMigrationPlan {
-    static let schemas: [VersionedSchema.Type] = [UserSettingsSchemaV2.self, UserSettingsSchemaV1.self]
-    static let stages: [MigrationStage] = [v1Tov2]
-    
-    static let v1Tov2 = MigrationStage.lightweight(fromVersion: UserSettingsSchemaV1.self, toVersion: UserSettingsSchemaV2.self)
-}
+//struct UserSettingsMigrationPlan: SchemaMigrationPlan {
+//    static let schemas: [VersionedSchema.Type] = [UserSettingsSchemaV2.self, UserSettingsSchemaV1.self]
+//    static let stages: [MigrationStage] = [v1Tov2]
+//    
+//    static let v1Tov2 = MigrationStage.lightweight(fromVersion: UserSettingsSchemaV1.self, toVersion: UserSettingsSchemaV2.self)
+//}
 
 
 struct UserSettingsSchemaV2: VersionedSchema {

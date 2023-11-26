@@ -148,40 +148,6 @@ struct ConfirmTransferToAppleSheet: View {
                 }
             }
         }
-//        .task { // trying concurrency
-//            do {
-//                let queue = DispatchQueue(label: "transfer", qos: .userInitiated, attributes: .concurrent)
-//                let mutex = DispatchSemaphore(value: 1)
-//                let oldSongs = try await SpotifyClient.getPlaylistSongs(playlistID: playlist.spid)
-//                var pool: [DispatchWorkItem] = []
-//                
-//                for song in oldSongs {
-//                    let item = DispatchWorkItem {
-//                        var newSong: SongData? = nil
-//                        Task {
-//                            newSong = try await AppleMusicClient.getSingleSongMatch(song: song)
-//                        }
-//                        guard let s = newSong else {
-//                            return
-//                        }
-//                        mutex.wait()
-//                        matchedSongs.append(s)
-//                        mutex.signal()
-//                    }
-//                    pool.append(item)
-//                    print("thread for \(song.name) submitted to the pool")
-//                    queue.async(execute: item)
-//                }
-//                
-//                for t in pool {
-//                    t.wait()
-//                }
-//                print("finished matching all songs!")
-//                isMatchComplete = true
-//            } catch {
-//                print("error matching songs")
-//            }
-//        }
         .task {
             do {
                 matchedSongs = try await AppleMusicClient.getSongMatches(playlist: playlist)
@@ -193,6 +159,4 @@ struct ConfirmTransferToAppleSheet: View {
     }
 }
 
-//#Preview {
-//    ConfirmAMTransferPlaylistSheet()
-//}
+
