@@ -21,6 +21,7 @@ struct SongDetailView: View {
                 Text(song.isrc)
                     .foregroundStyle(.secondary)
                     .fontDesign(.monospaced)
+                    .textSelection(.enabled)
             }
             HStack {
                 Text("Platform")
@@ -44,6 +45,14 @@ struct SongDetailView: View {
                     Text("None")
                         .foregroundStyle(.secondary)
                 }
+            }
+            HStack {
+                Text("Platform ID")
+                Spacer()
+                Text(song.platformID)
+                    .foregroundStyle(.secondary)
+                    .fontDesign(.monospaced)
+                    .textSelection(.enabled)
             }
         } header: {
             Text("Details")

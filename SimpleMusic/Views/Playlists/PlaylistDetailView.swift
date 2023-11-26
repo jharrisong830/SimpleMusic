@@ -52,12 +52,14 @@ struct PlaylistDetailView: View {
                     Text(playlist.platformID)
                         .foregroundStyle(.secondary)
                         .fontDesign(.monospaced)
+                        .textSelection(.enabled)
                 case .spotify:
                     Text("Spotify ID")
                     Spacer()
                     Text(playlist.platformID)
                         .foregroundStyle(.secondary)
                         .fontDesign(.monospaced)
+                        .textSelection(.enabled)
                 default:
                     Image(systemName: "network")
                 }

@@ -35,9 +35,9 @@ class AppleMusicClient {
                     let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(newID))
                     let amSong = try await amSongReq.response()
                     matches += 1
-                    newSongs.append(SongData(name: song.name,
+                    newSongs.append(SongData(name: amSong.items[0].title,
                                              artists: song.artists,
-                                             albumName: song.albumName,
+                                             albumName: amSong.items[0].albumTitle ?? "",
                                              albumArtists: song.albumArtists,
                                              isrc: song.isrc,
                                              platform: .appleMusic,
