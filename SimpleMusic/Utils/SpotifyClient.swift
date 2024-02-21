@@ -18,7 +18,7 @@ extension HTTPField.Name {
 
 
 class SpotifyClient {
-    static private let spClient = "b765bea9e3884e28819eeb4d950453a7"
+    static private let spClient = Bundle.main.infoDictionary?["SPOTIFY_CLIENT"] as? String
     static private let redirect = "simple-music://"
     
     
@@ -31,7 +31,7 @@ class SpotifyClient {
         newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
         let accessParams = "grant_type=authorization_code&code=\(authCode)&redirect_uri=\(redirect)"
 
-        let apiKeys = "\(spClient):\(api_key!)"
+        let apiKeys = "\(spClient!):\(api_key!)"
         let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
         newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
         
@@ -65,7 +65,7 @@ class SpotifyClient {
         var newRequest = HTTPRequest(method: .post, url: URL(string: "https://accounts.spotify.com/api/token")!)
         newRequest.headerFields[.contentType] = "application/x-www-form-urlencoded"
         
-        let apiKeys = "\(spClient):\(api_key!)"
+        let apiKeys = "\(spClient!):\(api_key!)"
         let encodedKeys = Data(apiKeys.data(using: .utf8)!).base64EncodedString()
         newRequest.headerFields[.authorization] = "Basic \(encodedKeys)"
         

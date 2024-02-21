@@ -17,7 +17,7 @@ import MusicKit
 struct AccountsView: View {
     @Query private var userSettings: [UserSettings]
     
-    private let spClient = "b765bea9e3884e28819eeb4d950453a7"
+    private let spClient = Bundle.main.infoDictionary?["SPOTIFY_CLIENT"] as? String
     private let redirect = "simple-music://"
     
     @State private var spAuthRequestFailed = false
@@ -35,7 +35,7 @@ struct AccountsView: View {
                             withAnimation {
                                 let params = [
                                     "response_type": "code",
-                                    "client_id": spClient,
+                                    "client_id": spClient!,
                                     "redirect_uri": redirect,
                                     "scope": "playlist-read-private playlist-modify-private playlist-modify-public"
                                 ]
