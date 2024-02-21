@@ -127,7 +127,7 @@ class SpotifyClient {
             allPlaylists.append(contentsOf: (jsonData["items"] as! [JSONObject]).filter {
                 ($0["owner"] as! JSONObject)["id"] as! String == userID
             }.map {
-                PlaylistData(name: $0["name"] as! String, platform: .spotify, platformID: $0["id"] as! String, platformURL: URL(string: ($0["external_urls"] as! JSONObject)["spotify"] as! String), coverImage: URL(string: ($0["images"] as! [JSONObject])[0]["url"] as! String))
+                PlaylistData(name: $0["name"] as! String, platform: .spotify, platformID: $0["id"] as! String, platformURL: URL(string: ($0["external_urls"] as! JSONObject)["spotify"] as! String), coverImage: ($0["images"] as! [JSONObject]).isEmpty ? nil : URL(string: ($0["images"] as! [JSONObject])[0]["url"] as! String))
             })
             playlistURL = jsonData["next"] as? String
         } while playlistURL != nil
