@@ -45,6 +45,7 @@ class AppleMusicClient {
                     let amSongReq = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: MusicItemID(newID))
                     let amSong = try await amSongReq.response()
                     matches += 1
+                    let image = amSong.items.isEmpty ? nil : amSong.items[0].artwork?.url(width: 300, height: 300)
                     newSongs.append(SongData(name: amSong.items[0].title,
                                              artists: song.artists,
                                              albumName: amSong.items[0].albumTitle ?? "",
@@ -53,7 +54,7 @@ class AppleMusicClient {
                                              platform: .appleMusic,
                                              platformID: newID,
                                              platformURL: amSong.items[0].url,
-                                             coverImage: amSong.items[0].artwork?.url(width: 300, height: 300),
+                                             coverImage: image,
                                              playlist: nil,
                                              index: song.index,
                                              matchState: .successful))
