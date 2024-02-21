@@ -28,7 +28,7 @@ struct ContentView: View {
 
     var body: some View {
         NavigationStack(path: $navPath) {
-            if userSettings == [] || (userSettings[0].noServicesActive && (MusicAuthorization.currentStatus != .authorized)) {
+            if userSettings == [] || userSettings[0].noServicesActive || MusicAuthorization.currentStatus != .authorized {
                 NoServicesView(currentTab: $currentTab)
                 .navigationTitle("Playlists")
             }

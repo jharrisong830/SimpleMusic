@@ -16,6 +16,12 @@ struct SongDetailView: View {
         Section {
             SongRow(song: song)
             HStack {
+                Text("Album")
+                Spacer()
+                Text(song.albumName)
+                    .foregroundStyle(.secondary)
+            }
+            HStack {
                 Text("ISRC")
                 Spacer()
                 Text(song.isrc)
